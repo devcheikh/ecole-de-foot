@@ -1,0 +1,23 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Dossiers IDE
+.vscode/
+.idea/
+
+# Fichiers de log
+*.log
+
+# Dossiers de dépendances (au cas où vous utiliseriez npm)
+node_modules/
+
+# Fichiers d'environnement (sensibles)
+.env
+.env.local
+.env.*.local
+
+# Dossiers de build (au cas où)
+dist/
+build/
+.vercel/

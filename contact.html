@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactez-nous | Avenir de Thiawlene</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .contact-grid {
+            margin-top: 100px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius);
+            font-family: inherit;
+        }
+        .whatsapp-card {
+            background: #25d366;
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            margin-top: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.jpg" alt="Avenir de Thiawlene" class="logo-img">
+                AVENIR DE THIAWLENE
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="programmes.html">Programmes</a></li>
+                <li><a href="#about">Philosophie</a></li>
+                <li><a href="contact.html" style="color: var(--primary);">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section>
+        <div class="container">
+            <div class="section-title">
+                <h2>Nous Contacter</h2>
+                <p>Besoin d'informations sur les inscriptions ou un partenariat ? Écrivez-nous.</p>
+            </div>
+
+            <div class="contact-grid reveal">
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Prénom</label>
+                                <input type="text" placeholder="Ex: Moussa" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" placeholder="Ex: Diop" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" placeholder="votre@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sujet</label>
+                            <input type="text" placeholder="Inscription, Partenariat..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea rows="5" placeholder="Votre message ici..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Envoyer le message</button>
+                    </form>
+                </div>
+                
+                <div class="contact-info">
+                    <div class="card">
+                        <h3>Coordonnées</h3>
+                        <p style="margin: 1rem 0;"><i class="fas fa-location-dot" style="color: var(--primary);"></i> Thiawlene, Rufisque, Sénégal</p>
+                        <p style="margin: 1rem 0;"><i class="fas fa-phone" style="color: var(--primary);"></i> +221 33 XXX XX XX</p>
+                        <p style="margin: 1rem 0;"><i class="fas fa-clock" style="color: var(--primary);"></i> Lun - Sam: 09:00 - 18:00</p>
+                    </div>
+
+                    <div class="whatsapp-card">
+                        <h4 style="color: white; margin-bottom: 1rem;">Réponse Instantanée</h4>
+                        <p style="margin-bottom: 1.5rem;">Discutez avec nos conseillers directement via WhatsApp.</p>
+                        <a href="https://wa.me/221XXXXXXXXX" class="btn" style="background: white; color: #25d366;"><i class="fab fa-whatsapp"></i> Ouvrir WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Form submission is specific to this page, keeping it or moving to a specific file
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Votre message a été envoyé avec succès (simulation).');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publications & Matchs | Avenir de Thiawlene</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.jpg" alt="Avenir de Thiawlene" class="logo-img">
+                AVENIR DE THIAWLENE
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="programmes.html">Programmes</a></li>
+                <li><a href="publications.html" style="color: var(--primary);">Publications</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero" style="height: 40vh; min-height: 300px;">
+        <div class="container hero-content">
+            <h1>Actualités & Vie du Club</h1>
+            <p>Suivez les performances de nos jeunes talents et découvrez les moments forts de l'école.</p>
+        </div>
+    </header>
+
+    <section class="pub-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Matchs & Résultats</h2>
+                <p>Retrouvez ici le calendrier de nos compétitions et les résultats de nos différentes catégories.</p>
+            </div>
+
+            <div id="matchesList" class="match-grid">
+                <!-- Data will be loaded via JS -->
+                 <p style="text-align: center; color: var(--text-muted); width: 100%;">Chargement des matchs...</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="pub-section" style="background: #fff;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Galerie Photos</h2>
+                <p>Immersion au cœur de l'entraînement et de la vie à l'école de football.</p>
+            </div>
+
+            <div id="galleryGrid" class="gallery-grid">
+                <!-- Data will be loaded via JS -->
+                 <p style="text-align: center; color: var(--text-muted); width: 100%;">Chargement de la galerie...</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <span class="footer-logo">AVENIR DE THIAWLENE</span>
+                    <p style="opacity: 0.7;">L'excellence du football à Thiawlene, Rufisque, Sénégal.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Avenir de Thiawlene. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/publications.js"></script>
+</body>
+</html>
