@@ -38,7 +38,6 @@
             color: var(--text-main);
         }
 
-        /* Ambient Background Orbs */
         .ambient-bg {
             position: fixed;
             inset: 0;
@@ -61,7 +60,6 @@
             100% { transform: translate(60px, 40px) scale(1.1); }
         }
 
-        /* Sidebar Pro */
         .sidebar {
             width: 280px;
             background: var(--secondary);
@@ -99,7 +97,6 @@
             box-shadow: 0 10px 20px -5px var(--primary-glow);
         }
 
-        /* Content Area */
         .main-content {
             flex: 1;
             padding: 2rem 2.5rem 2.5rem 0.5rem;
@@ -113,7 +110,6 @@
         .tab-content.active { display: block; }
         @keyframes tabFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Stats & Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -145,7 +141,6 @@
         .stat-card h3 { font-size: 2rem; font-weight: 800; color: var(--secondary); margin: 0; }
         .stat-card span { color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
 
-        /* Tables & Cards */
         .glass-card {
             background: white;
             border-radius: var(--radius-lg);
@@ -170,7 +165,6 @@
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 15px var(--primary-glow); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px var(--primary-glow); }
 
-        /* Mobile Header */
         .mobile-header {
             display: none;
             height: 60px;
@@ -378,7 +372,7 @@
                     <input type="text" id="p_position" class="form-input" placeholder="Position" required>
                     <input type="text" id="p_contact" class="form-input" placeholder="Contact Parent" required>
                     <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Photo du Joueur</label>
+                        <label style="display: block; margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text-main); letter-spacing: 0.3px;">Photo du Joueur</label>
                         <input type="file" id="p_photo" class="form-input" accept="image/*" style="padding: 0.5rem;">
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.25rem;">Enregistrer le joueur</button>
@@ -416,7 +410,7 @@
                 </div>
                 <form id="addGalleryForm">
                     <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Sélectionner une Image</label>
+                        <label style="display: block; margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text-main); letter-spacing: 0.3px;">Sélectionner une Image</label>
                         <input type="file" id="g_file" class="form-input" accept="image/*" style="padding: 0.5rem;" required>
                     </div>
                     <input type="text" id="g_titre" class="form-input" placeholder="Titre / Événement" required>
@@ -427,7 +421,6 @@
     </main>
 
     <style>
-        /* Modern Modal Styles Overhaul */
         .modal {
             display: none;
             position: fixed;
@@ -440,9 +433,7 @@
             padding: 1.5rem;
             animation: fadeIn 0.3s ease;
         }
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
         .modal-content {
             background-color: white;
             padding: 3rem;
@@ -492,15 +483,6 @@
             background: white;
             box-shadow: 0 0 0 4px var(--primary-glow);
         }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.6rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            letter-spacing: 0.3px;
-        }
 
         .category-header {
             background: #f8fafc !important;
@@ -531,7 +513,6 @@
         }
     </style>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/dashboard.js"></script>
@@ -546,7 +527,6 @@
             }
         }
         
-        // Close sidebar when clicking links on mobile
         document.querySelectorAll('.sidebar-link').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 1024) {
