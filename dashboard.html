@@ -262,9 +262,12 @@
         <a href="index.html" class="logo" style="color: white; gap: 0.5rem; font-size: 1rem;">
             <img src="assets/images/logo.jpg" alt="Logo" style="height: 32px; border-radius: 4px;"> ADT ADMIN
         </a>
-        <button class="hamburger-dashboard" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="index.html" style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"><i class="fas fa-home"></i> Voir Site</a>
+            <button class="hamburger-dashboard" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Background Decoration -->
@@ -280,6 +283,9 @@
                 <span style="font-size: 1.1rem; letter-spacing: 1px;">AVENIR</span>
                 <span style="font-size: 0.6rem; opacity: 0.6; font-weight: 400;">ADMIN PANEL</span>
             </div>
+        </a>
+        <a href="index.html" class="sidebar-link" style="background: rgba(34, 197, 94, 0.1); color: var(--primary); margin-bottom: 1rem;">
+            <i class="fas fa-globe"></i> Retour au Site Public
         </a>
         <nav class="sidebar-nav">
             <a href="#" class="sidebar-link active" onclick="switchTab('overview')"><i class="fas fa-grid-2"></i> Dashboard</a>
