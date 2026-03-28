@@ -329,11 +329,10 @@
                 <div class="table-header">
                     <h4 style="margin: 0; font-size: 1.1rem;">Inscriptions Récentes</h4>
                 </div>
-                <table>
+                <table class="players-table">
                     <thead>
                         <tr>
                             <th>Joueur</th>
-                            <th>Catégorie</th>
                             <th>Position</th>
                             <th>Statut</th>
                             <th>Action</th>
@@ -406,6 +405,10 @@
                     </select>
                     <input type="text" id="p_position" class="form-input" placeholder="Position" required>
                     <input type="text" id="p_contact" class="form-input" placeholder="Contact Parent" required>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Photo du Joueur</label>
+                        <input type="file" id="p_photo" class="form-input" accept="image/*" style="padding: 0.5rem;">
+                    </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.25rem;">Enregistrer le joueur</button>
                 </form>
             </div>
@@ -440,7 +443,10 @@
                     <i class="fas fa-times close-modal" onclick="closeModal('galleryModal')"></i>
                 </div>
                 <form id="addGalleryForm">
-                    <input type="url" id="g_url" class="form-input" placeholder="URL de l'image (ex: https://...)" required>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Sélectionner une Image</label>
+                        <input type="file" id="g_file" class="form-input" accept="image/*" style="padding: 0.5rem;" required>
+                    </div>
                     <input type="text" id="g_titre" class="form-input" placeholder="Titre / Événement" required>
                     <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.25rem;">Ajouter la photo</button>
                 </form>
@@ -498,6 +504,26 @@
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
             font-weight: 500;
+        }
+
+        .category-header {
+            background: rgba(34, 197, 94, 0.05) !important;
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.75rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e2e8f0;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
     </style>
 
