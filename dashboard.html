@@ -229,6 +229,9 @@
                 <div class="form-group">
                     <label class="form-label">Catégorie</label>
                     <select id="p_categorie" class="form-input" required>
+                        <option value="U7">U7</option>
+                        <option value="U9">U9</option>
+                        <option value="U11">U11</option>
                         <option value="U13">U13</option>
                         <option value="U15">U15</option>
                         <option value="U17">U17</option>
@@ -239,8 +242,18 @@
                     <label class="form-label">Position</label>
                     <input type="text" id="p_position" class="form-input" placeholder="Ex: Défenseur Central" required>
                 </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Nom du Père</label>
+                        <input type="text" id="p_nom_pere" class="form-input" placeholder="Nom complet du père">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom de la Mère</label>
+                        <input type="text" id="p_nom_mere" class="form-input" placeholder="Nom complet de la mère">
+                    </div>
+                </div>
                 <div class="form-group">
-                    <label class="form-label">Contact Parent</label>
+                    <label class="form-label">Contact Parent (Obligatoire U7-U15)</label>
                     <input type="text" id="p_contact" class="form-input" placeholder="Numéro de téléphone" required>
                 </div>
                 <div class="form-group">
@@ -315,6 +328,19 @@
                     Ajouter la photo
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Player Details Modal -->
+    <div id="playerDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" style="margin-bottom: 2rem;">
+                <h3 style="font-weight: 700;">Détails du Joueur</h3>
+                <div class="close-modal" onclick="closeModal('playerDetailsModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <div id="player-details-content">
+                <!-- Data populated via JS -->
+            </div>
         </div>
     </div>
 
