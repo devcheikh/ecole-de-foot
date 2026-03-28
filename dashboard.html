@@ -4,536 +4,323 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de Bord | Avenir de Thiawlene</title>
-    <link rel="stylesheet" href="css/main.css">
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --primary-glow: rgba(16, 185, 129, 0.2);
-            --secondary: #0f172a;
-            --accent: #3b82f6;
-            --white: #ffffff;
-            --bg-body: #f8fafc;
-            --glass-white: rgba(255, 255, 255, 0.9);
-            --glass-border: rgba(226, 232, 240, 0.8);
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --radius-lg: 1.5rem;
-            --radius-md: 1rem;
-            --shadow-premium: 0 10px 30px -5px rgba(15, 23, 42, 0.05);
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-body);
-            display: flex;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            position: relative;
-            color: var(--text-main);
-        }
-
-        .ambient-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.25;
-            animation: orbMove 25s infinite alternate ease-in-out;
-        }
-        .orb-1 { width: 600px; height: 600px; background: var(--primary-glow); top: -15%; right: -10%; }
-        .orb-2 { width: 500px; height: 500px; background: rgba(59, 130, 246, 0.1); bottom: -10%; left: 5%; }
-
-        @keyframes orbMove {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(60px, 40px) scale(1.1); }
-        }
-
-        .sidebar {
-            width: 280px;
-            background: var(--secondary);
-            margin: 1.25rem;
-            border-radius: var(--radius-lg);
-            padding: 2rem 1.25rem;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.05);
-            z-index: 1000;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.25rem;
-            border-radius: var(--radius-md);
-            color: rgba(255,255,255,0.5);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-weight: 500;
-            margin-bottom: 0.4rem;
-        }
-        .sidebar-link i { font-size: 1.1rem; }
-        .sidebar-link:hover {
-            color: white;
-            background: rgba(255,255,255,0.05);
-            transform: translateX(4px);
-        }
-        .sidebar-link.active {
-            background: linear-gradient(135deg, var(--primary), #34d399);
-            color: white;
-            box-shadow: 0 10px 20px -5px var(--primary-glow);
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 2rem 2.5rem 2.5rem 0.5rem;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-        .tab-content {
-            display: none;
-            animation: tabFade 0.4s ease-out;
-        }
-        .tab-content.active { display: block; }
-        @keyframes tabFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.75rem;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            box-shadow: var(--shadow-premium);
-            transition: all 0.3s ease;
-            border: 1px solid #f1f5f9;
-        }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
-        .stat-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-        .stat-card h3 { font-size: 2rem; font-weight: 800; color: var(--secondary); margin: 0; }
-        .stat-card span { color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
-
-        .glass-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            border: 1px solid #f1f5f9;
-            box-shadow: var(--shadow-premium);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-        .table-header { padding: 1.5rem 2rem; border-bottom: 1px solid #f1f5f9; background: #fafafa; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; padding: 0.5rem 1.5rem; }
-        th { text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-        td { background: #fcfcfc; padding: 1.2rem 1rem; font-weight: 500; transition: all 0.2s; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
-        tr td:first-child { border-radius: 0.75rem 0 0 0.75rem; border-left: 1px solid #f1f5f9; padding-left: 1.5rem; }
-        tr td:last-child { border-radius: 0 0.75rem 0.75rem 0; border-right: 1px solid #f1f5f9; padding-right: 1.5rem; }
-        tr:hover td { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-
-        .badge { padding: 0.4rem 0.8rem; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
-        .badge-success { background: #dcfce7; color: #10b981; }
-        .badge-warning { background: #fef9c3; color: #ca8a04; }
-
-        .btn { padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 700; transition: all 0.3s; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 15px var(--primary-glow); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px var(--primary-glow); }
-
-        .mobile-header {
-            display: none;
-            height: 60px;
-            background: var(--secondary);
-            padding: 0 1.5rem;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1100;
-        }
-
-        @media (max-width: 1024px) {
-            body { flex-direction: column; overflow-y: auto; height: auto; }
-            .mobile-header { display: flex; }
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: -320px;
-                height: 100vh;
-                margin: 0;
-                border-radius: 0;
-                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-            .sidebar.active { transform: translateX(320px); }
-            .main-content { padding: 1.5rem; }
-            .stats-grid { grid-template-columns: 1fr; }
-            table { min-width: 600px; }
-            .glass-card { overflow-x: auto; }
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    </style>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
-<body style="min-height: 100vh;">
+<body>
 
-    <div class="mobile-header">
-        <a href="index.html" class="logo" style="color: white; gap: 0.5rem; font-size: 1rem;">
-            <img src="assets/images/logo.jpg" alt="Logo" style="height: 32px; border-radius: 4px;"> ADT ADMIN
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <a href="index.html" class="logo">
+            <img src="assets/images/logo.jpg" alt="Logo ADT">
+            <span style="color: white; font-weight: 700; font-size: 0.9rem;">ADT ADMIN</span>
         </a>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <a href="index.html" style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"><i class="fas fa-home"></i> Voir Site</a>
-            <button class="hamburger-dashboard" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </div>
+        <button class="hamburger" id="mobile-toggle" onclick="toggleSidebar()" style="background: none; border: none; color: white; font-size: 1.5rem;">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
 
-    <!-- Background Decoration -->
+    <!-- Ambient Background -->
     <div class="ambient-bg">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
     </div>
 
-    <aside class="sidebar">
-        <a href="index.html" class="logo" style="color: white; gap: 0.75rem; justify-content: flex-start; margin-bottom: 2rem;">
-            <img src="assets/images/logo.jpg" alt="Logo ADT" class="logo-img" style="height: 48px;"> 
-            <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 1.1rem; letter-spacing: 1px;">AVENIR</span>
-                <span style="font-size: 0.6rem; opacity: 0.6; font-weight: 400;">ADMIN PANEL</span>
-            </div>
-        </a>
-        <a href="index.html" class="sidebar-link" style="background: rgba(34, 197, 94, 0.1); color: var(--primary); margin-bottom: 1rem;">
-            <i class="fas fa-globe"></i> Retour au Site Public
-        </a>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.jpg" alt="Logo ADT">
+                <div>
+                    <div style="font-weight: 800; font-size: 1.1rem; line-height: 1.1;">AVENIR</div>
+                    <div style="font-size: 0.65rem; opacity: 0.5; letter-spacing: 1px;">ADMIN PANEL</div>
+                </div>
+            </a>
+        </div>
+        
         <nav class="sidebar-nav">
-            <a href="#" class="sidebar-link active" onclick="switchTab('overview')"><i class="fas fa-grid-2"></i> Dashboard</a>
-            <a href="#" class="sidebar-link" onclick="switchTab('players')"><i class="fas fa-users"></i> Joueurs</a>
-            <a href="#" class="sidebar-link" onclick="switchTab('matches')"><i class="fas fa-calendar-star"></i> Matchs</a>
-            <a href="#" class="sidebar-link" onclick="switchTab('gallery')"><i class="fas fa-images"></i> Galerie</a>
-            <a href="#" class="sidebar-link"><i class="fas fa-sliders"></i> Paramètres</a>
+            <a href="#" class="sidebar-link active" onclick="switchTab('overview')">
+                <i class="fas fa-chart-pie"></i> Vue d'ensemble
+            </a>
+            <a href="#" class="sidebar-link" onclick="switchTab('players')">
+                <i class="fas fa-users"></i> Joueurs
+            </a>
+            <a href="#" class="sidebar-link" onclick="switchTab('matches')">
+                <i class="fas fa-futbol"></i> Matchs
+            </a>
+            <a href="#" class="sidebar-link" onclick="switchTab('gallery')">
+                <i class="fas fa-images"></i> Galerie
+            </a>
+            <a href="#" class="sidebar-link">
+                <i class="fas fa-cog"></i> Paramètres
+            </a>
         </nav>
-        <div class="sidebar-footer" style="padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto;">
-            <a href="login.html" class="sidebar-link" style="color: #ef4444; background: rgba(239, 68, 68, 0.08);">
-                <i class="fas fa-power-off"></i> Déconnexion
+
+        <div class="sidebar-footer">
+            <a href="index.html" class="sidebar-link">
+                <i class="fas fa-external-link-alt"></i> Voir le site
+            </a>
+            <a href="login.html" class="sidebar-link logout-link">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
             </a>
         </div>
     </aside>
 
-    <main class="main-content">
-        <!-- Dashboard Overview Tab -->
-        <div id="tab-overview" class="tab-content active">
-            <div style="margin-bottom: 3rem;">
-                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Résumé de l'Activité</h2>
-                <p style="color: var(--text-muted);">Voici un aperçu global de votre académie.</p>
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <header class="top-bar">
+            <div class="breadcrumb">
+                <h1 id="current-tab-title">Tableau de Bord</h1>
             </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                        <i class="fas fa-users-viewfinder"></i>
-                    </div>
-                    <div>
-                        <h3 id="stat-players">-</h3>
-                        <span>Total Joueurs</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <div>
-                        <h3 id="stat-matches">-</h3>
-                        <span>Matchs Publiés</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-                        <i class="fas fa-images"></i>
-                    </div>
-                    <div>
-                        <h3 id="stat-gallery">-</h3>
-                        <span>Photos Galerie</span>
-                    </div>
-                </div>
+            <div class="top-actions">
+                <button class="btn btn-primary" id="header-action-btn" style="display: none;" onclick="handleHeaderAction()">
+                    <i class="fas fa-plus"></i> Nouveau
+                </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Players Tab -->
-        <div id="tab-players" class="tab-content">
-            <div class="tab-title-container" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
-                <div>
-                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Gestion des Joueurs</h2>
-                    <p style="color: var(--text-muted);">Liste complète des inscrits et status des dossiers.</p>
+        <main class="main-content">
+            <!-- Overview Tab -->
+            <div id="tab-overview" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-players">-</h3>
+                            <span>Total Joueurs</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-matches">-</h3>
+                            <span>Matchs Joués</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-gallery">-</h3>
+                            <span>Photos Galerie</span>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn btn-primary" onclick="openModal('playerModal')"><i class="fas fa-plus"></i> Nouveau Joueur</button>
-            </div>
-            <div class="glass-card table-card">
-                <div class="table-header">
-                    <h4 style="margin: 0; font-size: 1.1rem;">Inscriptions Récentes</h4>
-                </div>
-                <table class="players-table">
-                    <thead>
-                        <tr>
-                            <th>Joueur</th>
-                            <th>Position</th>
-                            <th>Statut</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="players-list"></tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- Matches Tab -->
-        <div id="tab-matches" class="tab-content">
-            <div class="tab-title-container" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
-                <div>
-                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Gestion des Matchs</h2>
-                    <p style="color: var(--text-muted);">Calendrier et résultats des compétitions.</p>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Activité Récente</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Événement</th>
+                                    <th>Catégorie</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-activity-list">
+                                <!-- Dynamically populated if needed -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <button class="btn btn-primary" onclick="openModal('matchModal')"><i class="fas fa-plus"></i> Nouveau Match</button>
             </div>
-            <div class="glass-card table-card">
-                <div class="table-header">
-                    <h4 style="margin: 0; font-size: 1.1rem;">Liste des Matchs</h4>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Adversaire</th>
-                            <th>Type</th>
-                            <th>Score</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="matches-list"></tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- Gallery Tab -->
-        <div id="tab-gallery" class="tab-content">
-            <div class="tab-title-container" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
-                <div>
-                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Galerie Photo</h2>
-                    <p style="color: var(--text-muted);">Gérez les images visibles sur le site public.</p>
+            <!-- Players Tab -->
+            <div id="tab-players" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Gestion des Joueurs</h2>
+                        <button class="btn btn-primary btn-sm" onclick="openModal('playerModal')">
+                            <i class="fas fa-plus"></i> Nouveau Joueur
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Joueur</th>
+                                    <th>Position</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="players-list"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <button class="btn btn-primary" onclick="openModal('galleryModal')"><i class="fas fa-plus"></i> Ajouter Photo</button>
             </div>
-            <div id="admin-gallery-grid" class="gallery-grid">
-                <!-- Gallery management items -->
-            </div>
-        </div>
 
-        <!-- Modals -->
-        <div id="playerModal" class="modal">
-            <div class="modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
-                    <h3>Ajouter un Nouveau Joueur</h3>
-                    <i class="fas fa-times close-modal" onclick="closeModal('playerModal')"></i>
+            <!-- Matches Tab -->
+            <div id="tab-matches" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Gestion des Matchs</h2>
+                        <button class="btn btn-primary btn-sm" onclick="openModal('matchModal')">
+                            <i class="fas fa-plus"></i> Nouveau Match
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Adversaire</th>
+                                    <th>Type</th>
+                                    <th>Score</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matches-list"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <form id="addPlayerForm">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            </div>
+
+            <!-- Gallery Tab -->
+            <div id="tab-gallery" class="tab-content">
+                <div class="card" style="border: none; background: transparent; box-shadow: none; overflow: visible;">
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+                        <button class="btn btn-primary" onclick="openModal('galleryModal')">
+                            <i class="fas fa-plus"></i> Ajouter une photo
+                        </button>
+                    </div>
+                    <div id="admin-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                        <!-- Gallery content -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="margin-bottom: 2rem;">
+                <h3 style="font-weight: 700;">Ajouter un Joueur</h3>
+                <div class="close-modal" onclick="closeModal('playerModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <form id="addPlayerForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Prénom</label>
                         <input type="text" id="p_prenom" class="form-input" placeholder="Prénom" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom</label>
                         <input type="text" id="p_nom" class="form-input" placeholder="Nom" required>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Catégorie</label>
                     <select id="p_categorie" class="form-input" required>
                         <option value="U13">U13</option>
                         <option value="U15">U15</option>
                         <option value="U17">U17</option>
                         <option value="Elite">Elite</option>
                     </select>
-                    <input type="text" id="p_position" class="form-input" placeholder="Position" required>
-                    <input type="text" id="p_contact" class="form-input" placeholder="Contact Parent" required>
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text-main); letter-spacing: 0.3px;">Photo du Joueur</label>
-                        <input type="file" id="p_photo" class="form-input" accept="image/*" style="padding: 0.5rem;">
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.25rem;">Enregistrer le joueur</button>
-                </form>
-            </div>
-        </div>
-
-        <div id="matchModal" class="modal">
-            <div class="modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
-                    <h3>Publier un Match</h3>
-                    <i class="fas fa-times close-modal" onclick="closeModal('matchModal')"></i>
                 </div>
-                <form id="addMatchForm">
+                <div class="form-group">
+                    <label class="form-label">Position</label>
+                    <input type="text" id="p_position" class="form-input" placeholder="Ex: Défenseur Central" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Parent</label>
+                    <input type="text" id="p_contact" class="form-input" placeholder="Numéro de téléphone" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Photo du Joueur</label>
+                    <input type="file" id="p_photo" class="form-input" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+                    Enregistrer le joueur
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="matchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="margin-bottom: 2rem;">
+                <h3 style="font-weight: 700;">Publier un Match</h3>
+                <div class="close-modal" onclick="closeModal('matchModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <form id="addMatchForm">
+                <div class="form-group">
+                    <label class="form-label">Date</label>
                     <input type="date" id="m_date" class="form-input" required>
-                    <input type="text" id="m_adversaire" class="form-input" placeholder="Nom de l'adversaire" required>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <input type="text" id="m_type" class="form-input" placeholder="Catégorie (ex: U17)">
-                        <input type="text" id="m_lieu" class="form-input" placeholder="Lieu">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <input type="number" id="m_score_eq" class="form-input" placeholder="Score ADT">
-                        <input type="number" id="m_score_adv" class="form-input" placeholder="Score ADV">
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.25rem;">Publier le match</button>
-                </form>
-            </div>
-        </div>
-
-        <div id="galleryModal" class="modal">
-            <div class="modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
-                    <h3>Ajouter à la Galerie</h3>
-                    <i class="fas fa-times close-modal" onclick="closeModal('galleryModal')"></i>
                 </div>
-                <form id="addGalleryForm">
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text-main); letter-spacing: 0.3px;">Sélectionner une Image</label>
-                        <input type="file" id="g_file" class="form-input" accept="image/*" style="padding: 0.5rem;" required>
+                <div class="form-group">
+                    <label class="form-label">Adversaire</label>
+                    <input type="text" id="m_adversaire" class="form-input" placeholder="Nom du club adverse" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Catégorie</label>
+                        <input type="text" id="m_type" class="form-input" placeholder="Ex: U17">
                     </div>
-                    <input type="text" id="g_titre" class="form-input" placeholder="Titre / Événement" required>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.25rem;">Ajouter la photo</button>
-                </form>
-            </div>
+                    <div class="form-group">
+                        <label class="form-label">Lieu</label>
+                        <input type="text" id="m_lieu" class="form-input" placeholder="Lieu du match">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Score ADT</label>
+                        <input type="number" id="m_score_eq" class="form-input" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Score ADV</label>
+                        <input type="number" id="m_score_adv" class="form-input" placeholder="0">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+                    Publier le match
+                </button>
+            </form>
         </div>
-    </main>
+    </div>
 
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 3000;
-            inset: 0;
-            background-color: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            animation: fadeIn 0.3s ease;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background-color: white;
-            padding: 3rem;
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 550px;
-            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.3);
-            position: relative;
-            border: 1px solid rgba(255,255,255,0.2);
-            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        .close-modal {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            font-size: 1.25rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: all 0.2s;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: #f1f5f9;
-        }
-        .close-modal:hover { color: #ef4444; background: #fee2e2; transform: rotate(90deg); }
+    <div id="galleryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="margin-bottom: 2rem;">
+                <h3 style="font-weight: 700;">Ajouter à la Galerie</h3>
+                <div class="close-modal" onclick="closeModal('galleryModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <form id="addGalleryForm">
+                <div class="form-group">
+                    <label class="form-label">Image</label>
+                    <input type="file" id="g_file" class="form-input" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Titre / Événement</label>
+                    <input type="text" id="g_titre" class="form-input" placeholder="Description de la photo" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+                    Ajouter la photo
+                </button>
+            </form>
+        </div>
+    </div>
 
-        .form-input {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            background: #f8fafc;
-            font-family: inherit;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px var(--primary-glow);
-        }
-
-        .category-header {
-            background: #f8fafc !important;
-            color: var(--primary-dark);
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-size: 0.7rem;
-            padding: 1.5rem 2rem !important;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .player-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            object-fit: cover;
-            background: #e2e8f0;
-            border: 2px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-    </style>
-
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/dashboard.js"></script>
-    <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('active');
-            const icon = document.querySelector('.hamburger-dashboard i');
-            if (icon.classList.contains('fa-bars')) {
-                icon.classList.replace('fa-bars', 'fa-times');
-            } else {
-                icon.classList.replace('fa-times', 'fa-bars');
-            }
-        }
-        
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 1024) {
-                    toggleSidebar();
-                }
-            });
-        });
-    </script>
 </body>
 </html>

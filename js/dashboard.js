@@ -1,5 +1,6 @@
 /* 
     Avenir de Thiawlene - Dashboard management
+    Refactored for Simple & Premium UI
 */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -10,6 +11,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Tab synchronization with Title
+    const tabTitles = {
+        'overview': 'Tableau de Bord',
+        'players': 'Gestion des Joueurs',
+        'matches': 'Gestion des Matchs',
+        'gallery': 'Galerie Photo'
+    };
+
     // Tab Management
     window.switchTab = function(tabId) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -18,8 +27,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         const activeTab = document.getElementById(`tab-${tabId}`);
         if (activeTab) activeTab.classList.add('active');
         
-        const activeLink = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
-        if (activeLink) activeLink.classList.add('active');
+        // Update Title in UI
+        const titleEl = document.getElementById('current-tab-title');
+        if (titleEl && tabTitles[tabId]) {
+            titleEl.textContent = tabTitles[tabId];
+        }
+
+        // Update Active Link
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            if (link.getAttribute('onclick')?.includes(`'${tabId}'`)) {
+                link.classList.add('active');
+            }
+        });
+
+        // Close sidebar on mobile
+        if (window.innerWidth <= 1024) {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('active')) {
+                window.toggleSidebar();
+            }
+        }
     };
 
     // Modal control functions
@@ -64,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Fetch and display players
     async function fetchPlayers() {
-        const { data: players, error } = await supabaseClient.from('joueurs' ).select('*').order('categorie', { ascending: true });
+        const { data: players, error } = await supabaseClient.from('joueurs').select('*').order('categorie', { ascending: true });
         if (error) return console.error('Error fetching players:', error);
 
         const tbody = document.getElementById('players-list');
@@ -76,26 +103,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const catPlayers = players.filter(p => p.categorie === cat);
                 if (catPlayers.length > 0) {
                     html += `
-                        <tr>
-                            <td colspan="4" class="category-header">${cat}</td>
+                        <tr class="category-divider">
+                            <td colspan="4" style="background: #f1f5f9; font-weight: 800; font-size: 0.75rem; color: #64748b; text-transform: uppercase;">${cat}</td>
                         </tr>
                     `;
                     catPlayers.forEach(p => {
                         html += `
                             <tr>
-                                <td style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <img src="${p.photo_url || 'assets/logo.png'}" class="player-avatar" alt="">
-                                    <span>${p.prenom} ${p.nom}</span>
+                                <td style="display: flex; align-items: center; gap: 1rem;">
+                                    <img src="${p.photo_url || 'assets/images/logo.jpg'}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; background: #e2e8f0; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" alt="">
+                                    <span style="font-weight: 600;">${p.prenom} ${p.nom}</span>
                                 </td>
-                                <td>${p.position || 'N/A'}</td>
+                                <td><span class="badge badge-info">${p.position || 'N/A'}</span></td>
                                 <td><span class="badge ${p.statut_dossier === 'Complet' ? 'badge-success' : 'badge-warning'}">${p.statut_dossier}</span></td>
-                                <td><i class="fas fa-trash" style="cursor: pointer; color: #fca5a5;" onclick="deleteItem('joueurs', '${p.id}')"></i></td>
+                                <td>
+                                    <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.2s;" onclick="deleteItem('joueurs', '${p.id}')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     });
                 }
             });
-            tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;">Aucun joueur trouvé</td></tr>';
+            tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 3rem; color: var(--text-muted);">Aucun joueur trouvé</td></tr>';
         }
         document.getElementById('stat-players').textContent = players.length;
     }
@@ -109,13 +140,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (tbody) {
             tbody.innerHTML = matches.map(match => `
                 <tr>
-                    <td>${new Date(match.date).toLocaleDateString()}</td>
+                    <td><span style="font-weight: 600;">${new Date(match.date).toLocaleDateString()}</span></td>
                     <td>${match.adversaire}</td>
-                    <td>${match.type}</td>
-                    <td>${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</td>
-                    <td><i class="fas fa-trash" style="cursor: pointer; color: #fca5a5;" onclick="deleteItem('matches', '${match.id}')"></i></td>
+                    <td><span class="badge badge-info">${match.type}</span></td>
+                    <td style="font-weight: 800; color: var(--primary);">${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</td>
+                    <td>
+                        <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.2s;" onclick="deleteItem('matches', '${match.id}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
                 </tr>
             `).join('');
+            if (matches.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 3rem; color: var(--text-muted);">Aucun match publié</td></tr>';
+            }
         }
         document.getElementById('stat-matches').textContent = matches.length;
     }
@@ -128,12 +166,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         const grid = document.getElementById('admin-gallery-grid');
         if (grid) {
             grid.innerHTML = images.map(img => `
-                <div class="gallery-item" style="position: relative;">
-                    <img src="${img.image_url}" alt="${img.titre}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
-                    <button onclick="deleteItem('gallery', '${img.id}')" style="position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;"><i class="fas fa-trash"></i></button>
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); color: white; padding: 5px; font-size: 0.8rem; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">${img.titre}</div>
+                <div class="gallery-item" style="position: relative; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow-sm); aspect-ratio: 1; group">
+                    <img src="${img.image_url}" alt="${img.titre}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <button onclick="deleteItem('gallery', '${img.id}')" style="position: absolute; top: 12px; right: 12px; width: 35px; height: 35px; border-radius: 50%; border: none; background: rgba(239, 68, 68, 0.9); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; opacity: 0;" class="delete-btn-gallery">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 20px 15px 15px; font-size: 0.9rem; font-weight: 600;">
+                        ${img.titre}
+                    </div>
                 </div>
             `).join('');
+
+            // Add CSS for gallery item interactions
+            if (!document.getElementById('gallery-js-styles')) {
+                const style = document.createElement('style');
+                style.id = 'gallery-js-styles';
+                style.textContent = `
+                    .gallery-item:hover .delete-btn-gallery { opacity: 1 !important; transform: scale(1.1); }
+                    .btn-action:hover { transform: scale(1.2); }
+                `;
+                document.head.appendChild(style);
+            }
         }
         document.getElementById('stat-gallery').textContent = images.length;
     }
@@ -154,8 +207,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addPlayerForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button');
-        const originalText = btn.textContent;
-        btn.textContent = 'Téléchargement...';
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
         btn.disabled = true;
 
         try {
@@ -169,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 position: document.getElementById('p_position').value,
                 parent_contact: document.getElementById('p_contact').value,
                 photo_url: photoUrl,
-                statut_dossier: 'En attente'
+                statut_dossier: 'Complet'
             }]);
 
             if (error) throw error;
@@ -179,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (err) {
             alert('Erreur: ' + err.message);
         } finally {
-            btn.textContent = originalText;
+            btn.innerHTML = originalText;
             btn.disabled = false;
         }
     };
@@ -200,8 +253,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addGalleryForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button');
-        const originalText = btn.textContent;
-        btn.textContent = 'Téléchargement...';
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
         btn.disabled = true;
 
         try {
@@ -220,8 +273,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (err) {
             alert('Erreur: ' + err.message);
         } finally {
-            btn.textContent = originalText;
+            btn.innerHTML = originalText;
             btn.disabled = false;
+        }
+    };
+
+    // Global toggle function for sidebar (mobile)
+    window.toggleSidebar = function() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
+        const icon = document.querySelector('#mobile-toggle i');
+        if (sidebar.classList.contains('active')) {
+            icon?.classList.replace('fa-bars', 'fa-times');
+        } else {
+            icon?.classList.replace('fa-times', 'fa-bars');
         }
     };
 
