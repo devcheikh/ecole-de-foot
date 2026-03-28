@@ -1,11 +1,12 @@
 /* 
     Avenir de Thiawlene - Dashboard management
-    Refactored for Simple & Premium UI
+    Refactored for Simple & Premium UI + Edit Capabilities
 */
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Global player storage for details view
+    // Global storage for details view and editing
     let playersCache = [];
+    let matchesCache = [];
 
     // Auth Session Check
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -70,6 +71,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    // --- Helper: Open Add Modals (Reset State) ---
+    window.openAddPlayer = function() {
+        document.getElementById('addPlayerForm').reset();
+        document.getElementById('p_id').value = '';
+        document.getElementById('playerModalTitle').textContent = 'Ajouter un Joueur';
+        document.getElementById('playerSubmitBtn').textContent = 'Enregistrer le joueur';
+        openModal('playerModal');
+    };
+
+    window.openAddMatch = function() {
+        document.getElementById('addMatchForm').reset();
+        document.getElementById('m_id').value = '';
+        document.getElementById('matchModalTitle').textContent = 'Publier un Match';
+        document.getElementById('matchSubmitBtn').textContent = 'Publier le match';
+        openModal('matchModal');
+    };
+
     // Image Upload helper
     async function uploadFile(file, folder) {
         if (!file) return null;
@@ -92,12 +110,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return publicUrl;
     }
 
-    // Fetch and display players
+    // --- Players Management ---
     async function fetchPlayers() {
         const { data: players, error } = await supabaseClient.from('joueurs').select('*').order('categorie', { ascending: true });
         if (error) return console.error('Error fetching players:', error);
 
-        playersCache = players; // Update cache
+        playersCache = players;
 
         const tbody = document.getElementById('players-list');
         if (tbody) {
@@ -122,9 +140,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <td><span class="badge badge-info">${p.position || 'N/A'}</span></td>
                                 <td><span class="badge ${p.statut_dossier === 'Complet' ? 'badge-success' : 'badge-warning'}">${p.statut_dossier}</span></td>
                                 <td onclick="event.stopPropagation()">
-                                    <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.2s;" onclick="deleteItem('joueurs', '${p.id}')">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn-action" style="color: var(--primary); background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="editPlayer('${p.id}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="deleteItem('joueurs', '${p.id}')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         `;
@@ -136,7 +159,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('stat-players').textContent = players.length;
     }
 
-    // Show Player Details
     window.showPlayerDetails = function(playerId) {
         const player = playersCache.find(p => p.id === playerId);
         if (!player) return;
@@ -150,6 +172,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div>
                             <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">${player.prenom} ${player.nom}</h2>
                             <span class="badge badge-info" style="font-size: 0.9rem;">${player.categorie} - ${player.position || 'Sans position'}</span>
+                            <div style="margin-top: 1rem;">
+                                <button class="btn btn-outline btn-sm" onclick="closeModal('playerDetailsModal'); editPlayer('${player.id}')">
+                                    <i class="fas fa-edit"></i> Modifier le profil
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
@@ -177,23 +204,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Fetch and display matches
+    window.editPlayer = function(id) {
+        const p = playersCache.find(x => x.id === id);
+        if (!p) return;
+
+        document.getElementById('p_id').value = p.id;
+        document.getElementById('p_prenom').value = p.prenom;
+        document.getElementById('p_nom').value = p.nom;
+        document.getElementById('p_categorie').value = p.categorie;
+        document.getElementById('p_position').value = p.position || '';
+        document.getElementById('p_nom_pere').value = p.nom_pere || '';
+        document.getElementById('p_nom_mere').value = p.nom_mere || '';
+        document.getElementById('p_contact').value = p.parent_contact || '';
+        
+        document.getElementById('playerModalTitle').textContent = 'Modifier le Joueur';
+        document.getElementById('playerSubmitBtn').textContent = 'Mettre à jour';
+        openModal('playerModal');
+    };
+
+    // --- Matches Management ---
     async function fetchMatches() {
-        const { data: matches, error } = await supabaseClient.from('matches').select('*').order('date', { ascending: false });
+        const { data: matches, error } = await supabaseClient.from('matches').select('*').order('date_match', { ascending: false });
         if (error) return console.error('Error fetching matches:', error);
+
+        matchesCache = matches;
 
         const tbody = document.getElementById('matches-list');
         if (tbody) {
             tbody.innerHTML = matches.map(match => `
                 <tr>
-                    <td><span style="font-weight: 600;">${new Date(match.date).toLocaleDateString()}</span></td>
+                    <td><span style="font-weight: 600;">${new Date(match.date_match).toLocaleDateString()}</span></td>
                     <td>${match.adversaire}</td>
-                    <td><span class="badge badge-info">${match.type}</span></td>
-                    <td style="font-weight: 800; color: var(--primary);">${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</td>
+                    <td><span class="badge badge-info">${match.categorie || match.type || 'N/A'}</span></td>
+                    <td style="font-weight: 800; color: var(--primary);">${match.score_equipe ?? '-'} : ${match.score_adversaire ?? '-'}</td>
                     <td>
-                        <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.2s;" onclick="deleteItem('matches', '${match.id}')">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-action" style="color: var(--primary); background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="editMatch('${match.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="deleteItem('matches', '${match.id}')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -204,7 +256,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('stat-matches').textContent = matches.length;
     }
 
-    // Fetch and display gallery
+    window.editMatch = function(id) {
+        const m = matchesCache.find(x => x.id === id);
+        if (!m) return;
+
+        document.getElementById('m_id').value = m.id;
+        document.getElementById('m_date').value = m.date_match ? new Date(m.date_match).toISOString().split('T')[0] : '';
+        document.getElementById('m_adversaire').value = m.adversaire;
+        document.getElementById('m_type').value = m.categorie || m.type || '';
+        document.getElementById('m_lieu').value = m.lieu || '';
+        document.getElementById('m_score_eq').value = m.score_equipe ?? '';
+        document.getElementById('m_score_adv').value = m.score_adversaire ?? '';
+
+        document.getElementById('matchModalTitle').textContent = 'Modifier le Match';
+        document.getElementById('matchSubmitBtn').textContent = 'Mettre à jour';
+        openModal('matchModal');
+    };
+
+    // --- Gallery & Generic ---
     async function fetchGallery() {
         const { data: images, error } = await supabaseClient.from('gallery').select('*').order('created_at', { ascending: false });
         if (error) return console.error('Error fetching gallery:', error);
@@ -223,7 +292,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             `).join('');
 
-            // Add CSS for gallery item interactions
             if (!document.getElementById('gallery-js-styles')) {
                 const style = document.createElement('style');
                 style.id = 'gallery-js-styles';
@@ -238,7 +306,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('stat-gallery').textContent = images.length;
     }
 
-    // Generic Delete function
     window.deleteItem = async function(table, id) {
         if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
         const { error } = await supabaseClient.from(table).delete().eq('id', id);
@@ -250,34 +317,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Forms handling
+    // --- Form Submissions (Edit/Add) ---
     document.getElementById('addPlayerForm').onsubmit = async (e) => {
         e.preventDefault();
-
-        // Validation based on Category
+        const id = document.getElementById('p_id').value;
         const cat = document.getElementById('p_categorie').value;
         const youthCategories = ['U7', 'U9', 'U11', 'U13', 'U15'];
         const nomPere = document.getElementById('p_nom_pere').value;
         const nomMere = document.getElementById('p_nom_mere').value;
         const contact = document.getElementById('p_contact').value;
 
-        if (youthCategories.includes(cat)) {
-            if (!nomPere || !nomMere || !contact) {
-                alert('Pour les catégories U7 à U15, les noms du père, de la mère et le contact sont obligatoires.');
-                return;
-            }
+        if (youthCategories.includes(cat) && (!nomPere || !nomMere || !contact)) {
+            alert('Pour les catégories U7 à U15, les noms du père, de la mère et le contact sont obligatoires.');
+            return;
         }
 
-        const btn = e.target.querySelector('button');
+        const btn = document.getElementById('playerSubmitBtn');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
         btn.disabled = true;
 
         try {
             const photoFile = document.getElementById('p_photo').files[0];
-            const photoUrl = await uploadFile(photoFile, 'players');
+            let photoUrl = null;
+            if (photoFile) photoUrl = await uploadFile(photoFile, 'players');
 
-            const { error } = await supabaseClient.from('joueurs').insert([{
+            const playerData = {
                 prenom: document.getElementById('p_prenom').value,
                 nom: document.getElementById('p_nom').value,
                 categorie: cat,
@@ -285,17 +350,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 parent_contact: contact,
                 nom_pere: nomPere,
                 nom_mere: nomMere,
-                photo_url: photoUrl,
                 statut_dossier: 'Complet'
-            }]);
+            };
+            if (photoUrl) playerData.photo_url = photoUrl;
 
-            if (error) throw error;
+            let result;
+            if (id) {
+                result = await supabaseClient.from('joueurs').update(playerData).eq('id', id);
+            } else {
+                result = await supabaseClient.from('joueurs').insert([playerData]);
+            }
+
+            if (result.error) throw result.error;
             closeModal('playerModal');
             fetchPlayers();
             e.target.reset();
-            alert('Joueur enregistré avec succès.');
+            alert(id ? 'Joueur mis à jour !' : 'Joueur enregistré !');
         } catch (err) {
-            alert('Erreur: ' + err.message + '\n\nNote: Assurez-vous que les colonnes nom_pere et nom_mere existent dans votre base de données.');
+            alert('Erreur: ' + err.message);
         } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;
@@ -304,15 +376,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('addMatchForm').onsubmit = async (e) => {
         e.preventDefault();
-        const { error } = await supabaseClient.from('matches').insert([{
-            date: document.getElementById('m_date').value,
+        const id = document.getElementById('m_id').value;
+        const matchData = {
+            date_match: document.getElementById('m_date').value,
             adversaire: document.getElementById('m_adversaire').value,
-            type: document.getElementById('m_type').value,
+            categorie: document.getElementById('m_type').value, // Use category field
             lieu: document.getElementById('m_lieu').value,
             score_equipe: document.getElementById('m_score_eq').value || null,
-            score_adv: document.getElementById('m_score_adv').value || null
-        }]);
-        if (error) alert(error.message); else { closeModal('matchModal'); fetchMatches(); e.target.reset(); }
+            score_adversaire: document.getElementById('m_score_adv').value || null
+        };
+
+        let result;
+        if (id) {
+            result = await supabaseClient.from('matches').update(matchData).eq('id', id);
+        } else {
+            result = await supabaseClient.from('matches').insert([matchData]);
+        }
+
+        if (result.error) alert(result.error.message); 
+        else { 
+            closeModal('matchModal'); 
+            fetchMatches(); 
+            e.target.reset(); 
+            alert(id ? 'Match mis à jour !' : 'Match publié !');
+        }
     };
 
     document.getElementById('addGalleryForm').onsubmit = async (e) => {
@@ -343,7 +430,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Global toggle function for sidebar (mobile)
     window.toggleSidebar = function() {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.toggle('active');
@@ -355,7 +441,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Initialize all sections
     fetchPlayers();
     fetchMatches();
     fetchGallery();
