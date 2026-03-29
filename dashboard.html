@@ -116,11 +116,20 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-                            <i class="fas fa-images"></i>
+                            <i class="fas fa-brain"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="stat-gallery">-</h3>
-                            <span>Photos Galerie</span>
+                            <h3 id="stat-quiz-participants">0</h3>
+                            <span>Participants Quiz</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-quiz-winners">0</h3>
+                            <span>Gagnants (100%)</span>
                         </div>
                     </div>
                 </div>
@@ -270,12 +279,14 @@
                                 <thead>
                                     <tr>
                                         <th>Participant</th>
+                                        <th>Contact</th>
+                                        <th>Thème/Niveau</th>
                                         <th>Score</th>
-                                        <th>Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="results-list">
-                                    <!-- Dynamic content -->
+                                    <tr><td colspan="5" style="text-align:center; padding:2rem; opacity:0.5;">Chargement des données...</td></tr>
                                 </tbody>
                             </table>
                         </div>

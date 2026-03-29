@@ -546,17 +546,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     async function fetchResults() {
-        console.log("Chargement des résultats du quiz...");
+        const tbody = document.getElementById('results-list');
+        if (!tbody) return;
+
+        console.log("Rafraîchissement des participations...");
         const { data, error } = await supabaseClient.from('quiz_results').select('*').order('completed_at', { ascending: false });
+        
         if (error) { 
-            console.error("Erreur fetching results:", error); 
+            console.error("Erreur résultats:", error);
+            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Erreur : ${error.message}</td></tr>`;
             return; 
         }
-        console.log("Résultats reçus :", data);
 
-        const tbody = document.getElementById('results-list');
         tbody.innerHTML = '';
-        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; opacity:0.5;">Aucun résultat enregistré.</td></tr>';
+            return;
+        }
+
         let winners = 0;
         data.forEach(res => {
             if (res.score === res.total_questions) winners++;
@@ -575,6 +582,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('total-participants').textContent = data.length;
         document.getElementById('total-winners').textContent = winners;
+
+        // Update Overview stats if they exist
+        const ovPart = document.getElementById('stat-quiz-participants');
+        if (ovPart) ovPart.textContent = data.length;
+        const ovWin = document.getElementById('stat-quiz-winners');
+        if (ovWin) ovWin.textContent = winners;
     }
 
     // Modal Handlers
