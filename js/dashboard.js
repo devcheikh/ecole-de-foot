@@ -224,7 +224,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Matches Management ---
     async function fetchMatches() {
-        const { data: matches, error } = await supabaseClient.from('matches').select('*').order('date_match', { ascending: false });
+        // Correct columns: date, type, score_adv
+        const { data: matches, error } = await supabaseClient.from('matches').select('*').order('date', { ascending: false });
         if (error) return console.error('Error fetching matches:', error);
 
         matchesCache = matches;
@@ -233,10 +234,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (tbody) {
             tbody.innerHTML = matches.map(match => `
                 <tr>
-                    <td><span style="font-weight: 600;">${new Date(match.date_match).toLocaleDateString()}</span></td>
+                    <td><span style="font-weight: 600;">${new Date(match.date).toLocaleDateString()}</span></td>
                     <td>${match.adversaire}</td>
-                    <td><span class="badge badge-info">${match.categorie || match.type || 'N/A'}</span></td>
-                    <td style="font-weight: 800; color: var(--primary);">${match.score_equipe ?? '-'} : ${match.score_adversaire ?? '-'}</td>
+                    <td><span class="badge badge-info">${match.type || 'N/A'}</span></td>
+                    <td style="font-weight: 800; color: var(--primary);">${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</td>
                     <td>
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn-action" style="color: var(--primary); background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="editMatch('${match.id}')">
@@ -261,12 +262,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!m) return;
 
         document.getElementById('m_id').value = m.id;
-        document.getElementById('m_date').value = m.date_match ? new Date(m.date_match).toISOString().split('T')[0] : '';
+        document.getElementById('m_date').value = m.date ? new Date(m.date).toISOString().split('T')[0] : '';
         document.getElementById('m_adversaire').value = m.adversaire;
-        document.getElementById('m_type').value = m.categorie || m.type || '';
+        document.getElementById('m_type').value = m.type || '';
         document.getElementById('m_lieu').value = m.lieu || '';
         document.getElementById('m_score_eq').value = m.score_equipe ?? '';
-        document.getElementById('m_score_adv').value = m.score_adversaire ?? '';
+        document.getElementById('m_score_adv').value = m.score_adv ?? '';
 
         document.getElementById('matchModalTitle').textContent = 'Modifier le Match';
         document.getElementById('matchSubmitBtn').textContent = 'Mettre à jour';
@@ -378,12 +379,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         const id = document.getElementById('m_id').value;
         const matchData = {
-            date_match: document.getElementById('m_date').value,
+            date: document.getElementById('m_date').value,
             adversaire: document.getElementById('m_adversaire').value,
-            categorie: document.getElementById('m_type').value, // Use category field
+            type: document.getElementById('m_type').value, 
             lieu: document.getElementById('m_lieu').value,
             score_equipe: document.getElementById('m_score_eq').value || null,
-            score_adversaire: document.getElementById('m_score_adv').value || null
+            score_adv: document.getElementById('m_score_adv').value || null
         };
 
         let result;
