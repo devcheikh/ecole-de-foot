@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (result.error) alert(result.error.message);
         else {
             closeModal('themeModal');
-            fetchThemes();
+            await fetchQuizData(); // Refresh list and stats
             e.target.reset();
         }
     };
@@ -693,7 +693,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (result.error) alert(result.error.message);
         else {
             closeModal('questionModal');
-            loadQuestions();
+            await loadQuestions();
+            await fetchQuizData(); // Refresh counts
             e.target.reset();
             document.getElementById('q_id').value = '';
         }
