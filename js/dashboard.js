@@ -565,19 +565,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchResults() {
         const tbody = document.getElementById('results-list');
+        const countEl = document.getElementById('total-participants');
+        const winnersEl = document.getElementById('total-winners');
+        const ovPartEl = document.getElementById('stat-quiz-participants');
+        const ovWinEl = document.getElementById('stat-quiz-winners');
+
         if (!tbody) return;
 
         console.log("Rafraîchissement des participations...");
         const { data, error } = await supabaseClient.from('quiz_results').select('*').order('completed_at', { ascending: false });
         
-        console.log("DEBUG: Résultats reçus =", data.length);
-        tbody.innerHTML = '';
+        if (error) { 
+            console.error("Erreur résultats:", error.message);
+            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Erreur : ${error.message}</td></tr>`;
+            return; 
+        }
+
+        // Logic stats
+        const total = data.length || 0;
+        let winners = 0;
         
-        if (data.length === 0) {
+        tbody.innerHTML = '';
+        if (total === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; opacity:0.5;">Aucun résultat enregistré.</td></tr>';
         } else {
-            // Stats & Rendering Logic
-            let winners = 0;
             data.forEach(res => {
                 const isWinner = res.score === res.total_questions;
                 if (isWinner) winners++;
@@ -592,15 +603,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 `;
                 tbody.appendChild(tr);
             });
-            document.getElementById('total-participants').textContent = data.length;
-            document.getElementById('total-winners').textContent = winners;
-            
-            // Stats Overview Tab
-            const ovPart = document.getElementById('stat-quiz-participants');
-            if (ovPart) ovPart.textContent = data.length;
-            const ovWin = document.getElementById('stat-quiz-winners');
-            if (ovWin) ovWin.textContent = winners;
         }
+
+        // Mise à jour de TOUS les compteurs (Dashboard + Overview)
+        if (countEl) countEl.textContent = total;
+        if (winnersEl) winnersEl.textContent = winners;
+        if (ovPartEl) ovPartEl.textContent = total;
+        if (ovWinEl) ovWinEl.textContent = winners;
     }
 
     // Modal Handlers
