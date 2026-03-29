@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interactif | Avenir de Thiawlene</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.jpg" alt="Avenir de Thiawlene" class="logo-img">
+                <span class="logo-text">AVENIR DE THIAWLENE</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="programmes.html">Programmes</a></li>
+                <li><a href="publications.html">Publications</a></li>
+                <li><a href="quiz.html" class="active">Quiz</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-primary">Connexion</a>
+            </div>
+            <button class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 300px; height: 40vh; display: flex; align-items: center; justify-content: center; text-align: center;">
+        <div class="container">
+            <h1>Le Grand Quiz de l'Académie</h1>
+            <p>Teste tes connaissances et deviens un champion !</p>
+        </div>
+    </header>
+
+    <main class="quiz-container">
+        <!-- Selection Screen -->
+        <div id="selection-screen" class="quiz-card reveal active">
+            <div class="quiz-header">
+                <h2>Étape 1 : Choisis ton thème</h2>
+                <p>Quel sujet maîtrises-tu le mieux ?</p>
+            </div>
+            <div class="theme-grid">
+                <div class="quiz-option-card" data-theme="foot">
+                    <i class="fas fa-futbol" style="color: var(--primary);"></i>
+                    <span>Football</span>
+                </div>
+                <div class="quiz-option-card" data-theme="maths">
+                    <i class="fas fa-calculator" style="color: #3b82f6;"></i>
+                    <span>Mathématiques</span>
+                </div>
+                <div class="quiz-option-card" data-theme="francais">
+                    <i class="fas fa-book" style="color: #f59e0b;"></i>
+                    <span>Français</span>
+                </div>
+                <div class="quiz-option-card" data-theme="coran">
+                    <i class="fas fa-mosque" style="color: #10b981;"></i>
+                    <span>Culture Coranique</span>
+                </div>
+            </div>
+
+            <div class="quiz-header" style="margin-top: 4rem;">
+                <h2>Étape 2 : Choisis ton niveau</h2>
+            </div>
+            <div class="level-grid">
+                <div class="quiz-option-card" data-level="facile">
+                    <i class="fas fa-seedling" style="color: #10b981; font-size: 1.5rem;"></i>
+                    <span>Navigateur (Facile)</span>
+                </div>
+                <div class="quiz-option-card" data-level="moyen">
+                    <i class="fas fa-mountain" style="color: #f59e0b; font-size: 1.5rem;"></i>
+                    <span>Explorateur (Moyen)</span>
+                </div>
+                <div class="quiz-option-card" data-level="difficile">
+                    <i class="fas fa-fire" style="color: #ef4444; font-size: 1.5rem;"></i>
+                    <span>Maître (Difficile)</span>
+                </div>
+            </div>
+
+            <button id="start-quiz-btn" class="btn btn-primary" style="width: 100%; margin-top: 4rem; padding: 1.25rem; font-size: 1.2rem; display: none;">
+                Commencer le Quiz <i class="fas fa-play" style="margin-left: 0.5rem;"></i>
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="quiz-card" style="display: none;">
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="question-container">
+                <h3 id="question-text" class="question-text">Chargement de la question...</h3>
+                <div id="options-list" class="options-list">
+                    <!-- Options populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="quiz-card result-screen" style="display: none;">
+            <i class="fas fa-trophy" style="font-size: 4rem; color: #f59e0b; margin-bottom: 1.5rem;"></i>
+            <h2>Félicitations !</h2>
+            <p id="result-message">Tu as terminé le quiz avec brio.</p>
+            <div id="score-display" class="result-score">0%</div>
+            <p id="score-details" style="margin-bottom: 2.5rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
+            <button onclick="location.reload()" class="btn btn-primary" style="padding: 1rem 2.5rem;">Rejouer</button>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <span class="footer-logo">AVENIR DE THIAWLENE</span>
+                    <p style="opacity: 0.7;">L'excellence du football à Thiawlene, Rufisque, Sénégal. Formateur de talents depuis des années.</p>
+                </div>
+                <div class="footer-links" style="list-style: none;">
+                    <h4 style="color: white; margin-bottom: 1.5rem;">Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="programmes.html">Programmes</a></li>
+                        <li><a href="quiz.html">Quiz</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links" style="list-style: none;">
+                    <h4 style="color: white; margin-bottom: 1.5rem;">Contact</h4>
+                    <ul>
+                        <li><i class="fas fa-location-dot"></i> Thiawlene, Rufisque</li>
+                        <li><i class="fas fa-phone"></i> +221 77 388 76 72 / 77 420 44 23</li>
+                        <li><i class="fas fa-envelope"></i> cheikhtalibouyadiop@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mbodja fara from Avenir de Thiawlene. Tous droits réservés. 773887672</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
