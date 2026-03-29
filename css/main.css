@@ -638,3 +638,55 @@ footer {
         text-align: center;
     }
 }
+
+/* --- Floating CTA --- */
+.floating-cta {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+    z-index: 1000;
+    animation: ctaPulse 2s infinite;
+    transition: all 0.3s ease;
+}
+
+.floating-cta:hover {
+    transform: scale(1.05) translateY(-5px);
+    background: #16a34a;
+}
+
+.floating-cta i {
+    font-size: 1.1rem;
+}
+
+@keyframes ctaPulse {
+    0% {
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+    }
+    50% {
+        box-shadow: 0 10px 40px rgba(34, 197, 94, 0.7);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+    }
+}
+
+@media (max-width: 768px) {
+    .floating-cta {
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        font-size: 0.8rem;
+    }
+}
