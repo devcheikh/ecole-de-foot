@@ -117,6 +117,9 @@ startBtn.onclick = async () => {
     selectionScreen.style.display = 'none';
     gameScreen.style.display = 'block';
     
+    // Start Global Timer (Once)
+    startGlobalTimer();
+
     // Add welcome toast/overlay temporarily
     const welcome = document.createElement('div');
     welcome.style = "position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:var(--primary); color:white; padding:2rem; border-radius:20px; z-index:1000; font-size:1.5rem; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.3); text-align:center; animation: fadeInOut 2s forwards;";
@@ -132,9 +135,6 @@ function showQuestion() {
     questionText.textContent = question.question;
     optionsList.innerHTML = '';
     
-    resetTimer();
-    startTimer();
-
     const progress = (currentQuestionIndex / currentQuestionsList.length) * 100;
     progressBar.style.width = `${progress}%`;
 
@@ -148,7 +148,6 @@ function showQuestion() {
 }
 
 function handleAnswer(selectedIndex, btn) {
-    stopTimer();
     const question = currentQuestionsList[currentQuestionIndex];
     const allBtns = optionsList.querySelectorAll('.answer-btn');
     allBtns.forEach(b => b.inert = true);
@@ -217,36 +216,31 @@ async function saveResult() {
     }]);
 }
 
-// Timer Utilities
-function startTimer() {
-    timeLeft = 30;
+// Global Timer Logic
+function startGlobalTimer() {
+    timeLeft = 60; // Je passe à 60s car 10 questions en 30s total c'est très court !
     timerEl.textContent = timeLeft;
     timerEl.classList.remove('warning');
+
     timerInterval = setInterval(() => {
         timeLeft--;
         timerEl.textContent = timeLeft;
-        if (timeLeft <= 10) timerEl.classList.add('warning');
+
+        if (timeLeft <= 10) {
+            timerEl.classList.add('warning');
+        }
+
         if (timeLeft <= 0) {
-            stopTimer();
-            handleTimeout();
+            clearInterval(timerInterval);
+            showResults(); // Fin immédiate du quiz
         }
     }, 1000);
 }
 
-function stopTimer() { clearInterval(timerInterval); }
-function resetTimer() { stopTimer(); if (timerEl) { timerEl.classList.remove('warning'); timerEl.textContent = "30"; } }
+function stopTimer() {
+    clearInterval(timerInterval);
+}
 
 function handleTimeout() {
-    const question = currentQuestionsList[currentQuestionIndex];
-    const allBtns = optionsList.querySelectorAll('.answer-btn');
-    allBtns.forEach(b => b.inert = true);
-    allBtns[question.correct_index].classList.add('correct');
-    allBtns[question.correct_index].querySelector('i').className = 'fas fa-check-circle';
-    allBtns[question.correct_index].querySelector('i').style.opacity = '1';
-
-    setTimeout(() => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < currentQuestionsList.length) showQuestion();
-        else showResults();
-    }, 1500);
+    // Cette fonction n'est plus utilisée individuellement pour les questions
 }
