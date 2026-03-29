@@ -125,8 +125,12 @@
             <h2 id="result-title">Félicitations !</h2>
             <p id="result-message">Tu as terminé le quiz avec brio.</p>
             <div id="score-display" class="result-score">0%</div>
-            <p id="score-details" style="margin-bottom: 2.5rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
-            <button onclick="location.reload()" class="btn btn-primary" style="padding: 1rem 2.5rem;">Rejouer</button>
+            <p id="score-details" style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
+            <div id="save-status-msg" style="margin-bottom: 2rem; font-weight: 700; display: none;"></div>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="manual-save-btn" class="btn btn-secondary" style="padding: 1rem 2rem; display: none;" onclick="saveResult()">RÉ-ESSAYER ENREGISTREMENT</button>
+                <button onclick="location.reload()" class="btn btn-primary" style="padding: 1rem 2.5rem;">Rejouer</button>
+            </div>
         </div>
     </main>
 

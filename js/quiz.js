@@ -207,23 +207,44 @@ async function showResults() {
 }
 
 async function saveResult() {
-    console.log("Tentative de sauvegarde pour:", playerInfo.name);
+    const statusMsg = document.getElementById('save-status-msg');
+    const manualBtn = document.getElementById('manual-save-btn');
     
-    const { data, error } = await supabaseClient.from('quiz_results').insert([{
-        user_name: playerInfo.name,
-        user_phone: playerInfo.phone,
-        theme_name: currentThemeName,
-        difficulty: currentLevel,
-        score: parseInt(score),
-        total_questions: parseInt(currentQuestionsList.length)
-    }]);
+    if (statusMsg) {
+        statusMsg.style.display = 'block';
+        statusMsg.style.color = 'var(--primary)';
+        statusMsg.textContent = "Tentative d'enregistrement...";
+    }
 
-    if (error) {
-        console.error("Erreur Supabase Détallée:", error);
-        alert("ERREUR SAUVEGARDE: " + error.message + " (Code: " + error.code + ")");
-    } else {
-        console.log("Score enregistré !", data);
-        alert("Bravo " + playerInfo.name + " ! Ton score a été enregistré avec succès.");
+    try {
+        const { error } = await supabaseClient.from('quiz_results').insert([{
+            user_name: playerInfo.name || "Anonyme",
+            user_phone: playerInfo.phone || "0000",
+            theme_name: currentThemeName || "Inconnu",
+            difficulty: currentLevel || "facile",
+            score: parseInt(score),
+            total_questions: parseInt(currentQuestionsList.length)
+        }]);
+
+        if (error) {
+            console.error("ERREUR SUPABASE:", error);
+            if (statusMsg) {
+                statusMsg.style.color = '#ef4444';
+                statusMsg.textContent = "ERREUR: " + error.message;
+            }
+            if (manualBtn) manualBtn.style.display = 'block';
+            alert("ÉCHEC: " + error.message + "\nCode: " + error.code);
+        } else {
+            console.log("SUCCÈS !");
+            if (statusMsg) {
+                statusMsg.style.color = '#10b981';
+                statusMsg.textContent = "Score enregistré avec succès !";
+            }
+            if (manualBtn) manualBtn.style.display = 'none';
+        }
+    } catch (err) {
+        console.error("CRASH JS:", err);
+        alert("CRASH SYSTÈME: " + err.message);
     }
 }
 
