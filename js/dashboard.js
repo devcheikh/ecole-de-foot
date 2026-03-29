@@ -237,6 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td><span style="font-weight: 600;">${new Date(match.date).toLocaleDateString()}</span></td>
                     <td>${match.adversaire}</td>
                     <td><span class="badge badge-info">${match.type || 'N/A'}</span></td>
+                    <td><span style="font-size: 0.85rem; opacity: 0.8;">${match.match_type || '-'}</span></td>
                     <td style="font-weight: 800; color: var(--primary);">${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</td>
                     <td>
                         <div style="display: flex; gap: 0.5rem;">
@@ -265,6 +266,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('m_date').value = m.date ? new Date(m.date).toISOString().split('T')[0] : '';
         document.getElementById('m_adversaire').value = m.adversaire;
         document.getElementById('m_type').value = m.type || '';
+        document.getElementById('m_match_type').value = m.match_type || '';
         document.getElementById('m_lieu').value = m.lieu || '';
         document.getElementById('m_score_eq').value = m.score_equipe ?? '';
         document.getElementById('m_score_adv').value = m.score_adv ?? '';
@@ -382,6 +384,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             date: document.getElementById('m_date').value,
             adversaire: document.getElementById('m_adversaire').value,
             type: document.getElementById('m_type').value, 
+            match_type: document.getElementById('m_match_type').value,
             lieu: document.getElementById('m_lieu').value,
             score_equipe: document.getElementById('m_score_eq').value || null,
             score_adv: document.getElementById('m_score_adv').value || null

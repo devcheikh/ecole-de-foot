@@ -32,7 +32,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span class="match-status ${isUpcoming ? 'status-upcoming' : 'status-past'}">
                         ${isUpcoming ? 'À venir' : 'Résultat'}
                     </span>
-                    <div class="team">${match.type}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="category-tag" style="background: rgba(34, 197, 94, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(34, 197, 94, 0.2);">${match.type}</div>
+                        <div class="match-type-tag" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${match.match_type || ''}</div>
+                    </div>
                     <div class="match-teams">
                         <div class="team">AVENIR</div>
                         <div class="score">${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</div>
