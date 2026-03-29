@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         'overview': 'Tableau de Bord',
         'players': 'Gestion des Joueurs',
         'matches': 'Gestion des Matchs',
-        'gallery': 'Galerie Photo'
+        'gallery': 'Galerie Photo',
+        'quiz': 'Gestion du Quiz'
     };
 
     // Tab Management
@@ -451,4 +452,212 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchPlayers();
     fetchMatches();
     fetchGallery();
-});
+    fetchQuizData();
+
+    // --- Quiz Management Functions ---
+    window.currentSelectedThemeId = null;
+
+    async function fetchQuizData() {
+        await fetchThemes();
+        await fetchResults();
+    }
+
+    async function fetchThemes() {
+        const { data, error } = await supabaseClient.from('quiz_themes').select('*').order('created_at', { ascending: false });
+        if (error) { console.error(error); return; }
+        
+        const tbody = document.getElementById('themes-list');
+        const themeFilter = document.getElementById('theme-filter');
+        const qThemeId = document.getElementById('q_theme_id');
+        
+        tbody.innerHTML = '';
+        themeFilter.innerHTML = '<option value="">Tous les thèmes</option>';
+        qThemeId.innerHTML = '<option value="" disabled selected>Choisir un thème</option>';
+
+        data.forEach(theme => {
+            // Table Row
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><i class="${theme.icon}"></i></td>
+                <td><span class="theme-name-link" onclick="selectTheme('${theme.id}', '${theme.name}')" style="cursor:pointer; color:var(--primary); font-weight:600;">${theme.name}</span></td>
+                <td>
+                    <button class="btn-icon" onclick="editTheme('${theme.id}', '${theme.name}', '${theme.icon}')" title="Modifier"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon delete" onclick="deleteTheme('${theme.id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Filters & Selects
+            themeFilter.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
+            qThemeId.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
+        });
+    }
+
+    window.selectTheme = function(id, name) {
+        window.currentSelectedThemeId = id;
+        document.getElementById('selected-theme-name').textContent = name;
+        document.getElementById('theme-filter').value = id;
+        loadQuestions();
+    };
+
+    window.loadQuestions = async function() {
+        const themeId = document.getElementById('theme-filter').value;
+        const level = document.getElementById('level-filter').value;
+        if (!themeId) {
+            document.getElementById('questions-list').innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; opacity:0.5;">Sélectionnez un thème pour voir les questions</td></tr>';
+            return;
+        }
+
+        const { data, error } = await supabaseClient
+            .from('quiz_questions')
+            .select('*')
+            .eq('theme_id', themeId)
+            .eq('level', level)
+            .order('created_at', { ascending: true });
+
+        if (error) { console.error(error); return; }
+
+        const tbody = document.getElementById('questions-list');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; opacity:0.5;">Aucune question trouvée pour ce niveau.</td></tr>';
+            return;
+        }
+
+        data.forEach(q => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="max-width: 300px; white-space: normal;">${q.question}</td>
+                <td>${q.options[q.correct_index]}</td>
+                <td>
+                    <button class="btn-icon" onclick="editQuestion('${q.id}')" title="Modifier"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon delete" onclick="deleteQuestion('${q.id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    };
+
+    async function fetchResults() {
+        const { data, error } = await supabaseClient.from('quiz_results').select('*').order('completed_at', { ascending: false });
+        if (error) { console.error(error); return; }
+
+        const tbody = document.getElementById('results-list');
+        tbody.innerHTML = '';
+        
+        let winners = 0;
+        data.forEach(res => {
+            if (res.score === res.total_questions) winners++;
+            const isWinner = res.score === res.total_questions;
+            const tr = document.createElement('tr');
+            tr.className = isWinner ? 'winner-row' : '';
+            tr.innerHTML = `
+                <td><div style="font-weight:700;">${res.user_name}</div></td>
+                <td>${res.user_phone}</td>
+                <td><span style="font-size:0.8rem; opacity:0.7;">${res.theme_name} / ${res.difficulty}</span></td>
+                <td><span class="badge" style="background:${isWinner ? 'var(--primary)' : '#e2e8f0'}; color:${isWinner ? 'white' : 'inherit'};">${res.score}/${res.total_questions}</span></td>
+                <td><button class="btn-icon delete" onclick="deleteResult('${res.id}')"><i class="fas fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('total-participants').textContent = data.length;
+        document.getElementById('total-winners').textContent = winners;
+    }
+
+    // Modal Handlers
+    window.editTheme = function(id, name, icon) {
+        document.getElementById('theme_id').value = id;
+        document.getElementById('theme_name').value = name;
+        document.getElementById('theme_icon').value = icon;
+        openModal('themeModal');
+    };
+
+    window.deleteTheme = async function(id) {
+        if (!confirm('Supprimer ce thème et toutes ses questions ?')) return;
+        const { error } = await supabaseClient.from('quiz_themes').delete().eq('id', id);
+        if (error) alert(error.message);
+        else fetchThemes();
+    };
+
+    window.editQuestion = async function(id) {
+        const { data, error } = await supabaseClient.from('quiz_questions').select('*').eq('id', id).single();
+        if (error) return;
+        
+        document.getElementById('q_id').value = data.id;
+        document.getElementById('q_theme_id').value = data.theme_id;
+        document.getElementById('q_level').value = data.level;
+        document.getElementById('q_question').value = data.question;
+        document.getElementById('opt_0').value = data.options[0];
+        document.getElementById('opt_1').value = data.options[1];
+        document.getElementById('opt_2').value = data.options[2];
+        document.getElementById('opt_3').value = data.options[3];
+        document.getElementById('q_correct_index').value = data.correct_index;
+        
+        openModal('questionModal');
+    };
+
+    window.deleteQuestion = async function(id) {
+        if (!confirm('Supprimer cette question ?')) return;
+        const { error } = await supabaseClient.from('quiz_questions').delete().eq('id', id);
+        if (error) alert(error.message);
+        else loadQuestions();
+    };
+
+    window.deleteResult = async function(id) {
+        if (!confirm('Supprimer ce résultat ?')) return;
+        const { error } = await supabaseClient.from('quiz_results').delete().eq('id', id);
+        if (error) alert(error.message);
+        else fetchResults();
+    };
+
+    // Forms
+    document.getElementById('themeForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('theme_id').value;
+        const themeData = {
+            name: document.getElementById('theme_name').value,
+            icon: document.getElementById('theme_icon').value
+        };
+
+        let result;
+        if (id) result = await supabaseClient.from('quiz_themes').update(themeData).eq('id', id);
+        else result = await supabaseClient.from('quiz_themes').insert([themeData]);
+
+        if (result.error) alert(result.error.message);
+        else {
+            closeModal('themeModal');
+            fetchThemes();
+            e.target.reset();
+        }
+    };
+
+    document.getElementById('questionForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('q_id').value;
+        const questionData = {
+            theme_id: document.getElementById('q_theme_id').value,
+            level: document.getElementById('q_level').value,
+            question: document.getElementById('q_question').value,
+            options: [
+                document.getElementById('opt_0').value,
+                document.getElementById('opt_1').value,
+                document.getElementById('opt_2').value,
+                document.getElementById('opt_3').value
+            ],
+            correct_index: parseInt(document.getElementById('q_correct_index').value)
+        };
+
+        let result;
+        if (id) result = await supabaseClient.from('quiz_questions').update(questionData).eq('id', id);
+        else result = await supabaseClient.from('quiz_questions').insert([questionData]);
+
+        if (result.error) alert(result.error.message);
+        else {
+            closeModal('questionModal');
+            loadQuestions();
+            e.target.reset();
+            document.getElementById('q_id').value = '';
+        }
+    };

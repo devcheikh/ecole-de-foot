@@ -46,44 +46,57 @@
     <main class="quiz-container">
         <!-- Selection Screen -->
         <div id="selection-screen" class="quiz-card reveal active">
+            <div class="gift-banner" style="background: linear-gradient(to right, #f59e0b, #ef4444); color: white; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; justify-content: center; font-weight: 700; text-align: center;">
+                <i class="fas fa-gift" style="font-size: 1.5rem;"></i>
+                <span>DES CADEAUX SERONT REMIS AUX GAGNANTS (SCORE 100%) !</span>
+            </div>
+
             <div class="quiz-header">
                 <h2>Étape 1 : Choisis ton thème</h2>
                 <p>Quel sujet maîtrises-tu le mieux ?</p>
             </div>
-            <div class="theme-grid">
-                <div class="quiz-option-card" data-theme="foot">
-                    <i class="fas fa-futbol" style="color: var(--primary);"></i>
-                    <span>Football</span>
-                </div>
-                <div class="quiz-option-card" data-theme="maths">
-                    <i class="fas fa-calculator" style="color: #3b82f6;"></i>
-                    <span>Mathématiques</span>
-                </div>
-                <div class="quiz-option-card" data-theme="francais">
-                    <i class="fas fa-book" style="color: #f59e0b;"></i>
-                    <span>Français</span>
-                </div>
-                <div class="quiz-option-card" data-theme="coran">
-                    <i class="fas fa-mosque" style="color: #10b981;"></i>
-                    <span>Culture Coranique</span>
+            <div id="theme-grid" class="theme-grid">
+                <!-- Populated dynamically from Supabase -->
+                <div class="quiz-option-card active" data-theme="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Chargement...</span>
                 </div>
             </div>
 
-            <div class="quiz-header" style="margin-top: 4rem;">
-                <h2>Étape 2 : Choisis ton niveau</h2>
+            <div id="level-selection" style="display: none;">
+                <div class="quiz-header" style="margin-top: 4rem;">
+                    <h2>Étape 2 : Choisis ton niveau</h2>
+                </div>
+                <div class="level-grid">
+                    <div class="quiz-option-card" data-level="facile">
+                        <i class="fas fa-seedling" style="color: #10b981; font-size: 1.5rem;"></i>
+                        <span>Navigateur (Facile)</span>
+                    </div>
+                    <div class="quiz-option-card" data-level="moyen">
+                        <i class="fas fa-mountain" style="color: #f59e0b; font-size: 1.5rem;"></i>
+                        <span>Explorateur (Moyen)</span>
+                    </div>
+                    <div class="quiz-option-card" data-level="difficile">
+                        <i class="fas fa-fire" style="color: #ef4444; font-size: 1.5rem;"></i>
+                        <span>Maître (Difficile)</span>
+                    </div>
+                </div>
             </div>
-            <div class="level-grid">
-                <div class="quiz-option-card" data-level="facile">
-                    <i class="fas fa-seedling" style="color: #10b981; font-size: 1.5rem;"></i>
-                    <span>Navigateur (Facile)</span>
+
+            <div id="id-selection" style="display: none; margin-top: 4rem;">
+                <div class="quiz-header">
+                    <h2>Étape 3 : Tes coordonnées</h2>
+                    <p>Pour t'identifier et te contacter si tu gagnes un cadeau !</p>
                 </div>
-                <div class="quiz-option-card" data-level="moyen">
-                    <i class="fas fa-mountain" style="color: #f59e0b; font-size: 1.5rem;"></i>
-                    <span>Explorateur (Moyen)</span>
-                </div>
-                <div class="quiz-option-card" data-level="difficile">
-                    <i class="fas fa-fire" style="color: #ef4444; font-size: 1.5rem;"></i>
-                    <span>Maître (Difficile)</span>
+                <div style="max-width: 400px; margin: 0 auto; text-align: left;">
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Prénom & Nom</label>
+                        <input type="text" id="player-name" class="form-input" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ex: Moussa Diop">
+                    </div>
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Numéro WhatsApp</label>
+                        <input type="text" id="player-phone" class="form-input" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ex: 77 123 45 67">
+                    </div>
                 </div>
             </div>
 
