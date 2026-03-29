@@ -460,6 +460,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchGallery();
     fetchQuizData();
 
+    // --- REALTIME UPDATES ---
+    // Subscribe to new quiz results to update the dashboard instantly
+    supabaseClient
+        .channel('quiz-results-realtime')
+        .on('postgres_changes', { 
+            event: 'INSERT', 
+            schema: 'public', 
+            table: 'quiz_results' 
+        }, payload => {
+            console.log('Nouveau résultat détecté en temps réel !', payload);
+            fetchResults();
+        })
+        .subscribe();
+
     // --- Quiz Management Functions ---
     window.currentSelectedThemeId = null;
 
