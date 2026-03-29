@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     if (entry.target.classList.contains('stagger-reveal')) {
-                        // Handle staggering for group elements
                         const parent = entry.target.parentElement;
                         const siblings = Array.from(parent.querySelectorAll('.stagger-reveal'));
                         const index = siblings.indexOf(entry.target);
@@ -30,9 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, observerOptions);
 
-        document.querySelectorAll('.reveal, .stagger-reveal').forEach(el => {
-            appearanceObserver.observe(el);
+        // Initial observation
+        const observeElements = (container = document) => {
+            container.querySelectorAll('.reveal, .stagger-reveal').forEach(el => {
+                appearanceObserver.observe(el);
+            });
+        };
+
+        observeElements();
+
+        // Support for dynamic content (MutationObserver)
+        const mutationObserver = new MutationObserver((mutations) => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === 1) { // ELEMENT_NODE
+                        if (node.classList.contains('reveal') || node.classList.contains('stagger-reveal')) {
+                            appearanceObserver.observe(node);
+                        }
+                        // Also check within the added node
+                        node.querySelectorAll('.reveal, .stagger-reveal').forEach(el => {
+                            appearanceObserver.observe(el);
+                        });
+                    }
+                });
+            });
         });
+
+        mutationObserver.observe(document.body, { childList: true, subtree: true });
     }
 
     // --- Hero Slider Logic ---
