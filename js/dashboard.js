@@ -301,19 +301,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>
             `).join('');
-
-            if (!document.getElementById('gallery-js-styles')) {
-                const style = document.createElement('style');
-                style.id = 'gallery-js-styles';
-                style.textContent = `
-                    .gallery-item:hover .delete-btn-gallery { opacity: 1 !important; transform: scale(1.1); }
-                    .btn-action:hover { transform: scale(1.2); }
-                    .player-row:hover td { background: #f8fafc !important; }
-                `;
-                document.head.appendChild(style);
-            }
         }
-        document.getElementById('stat-gallery').textContent = images.length;
+        const statGal = document.getElementById('stat-gallery');
+        if (statGal) statGal.textContent = images.length;
     }
 
     window.deleteItem = async function(table, id) {
@@ -460,18 +450,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchGallery();
     fetchQuizData();
 
-    // --- REALTIME UPDATES ---
-    // Subscribe to new quiz results to update the dashboard instantly
-    supabaseClient
-        .channel('quiz-results-realtime')
-        .on('postgres_changes', { 
-            event: 'INSERT', 
-            schema: 'public', 
-            table: 'quiz_results' 
-        }, payload => {
-            console.log('Nouveau résultat détecté en temps réel !', payload);
-            fetchResults();
-        })
+    // --- REALTIME UPDATES (TOTAL SYNC) ---
+    const quizChannel = supabaseClient.channel('quiz-total-sync');
+    
+    quizChannel
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_results' }, () => fetchResults())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_themes' }, () => fetchThemes())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_questions' }, () => loadQuestions())
         .subscribe();
 
     // --- Quiz Management Functions ---
@@ -509,20 +494,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <button class="btn-icon delete" onclick="deleteTheme('${theme.id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
                 </td>
             `;
-            tbody.appendChild(tr);
+            if (tbody) tbody.appendChild(tr);
 
             // Filters & Selects
-            themeFilter.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
-            qThemeId.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
+            if (themeFilter) themeFilter.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
+            if (qThemeId) qThemeId.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
         });
+
+        // Auto-select first theme if nothing selected and we have data
+        if (data.length > 0 && themeFilter && !themeFilter.value) {
+            selectTheme(data[0].id, data[0].name);
+        }
     }
 
     window.selectTheme = function(id, name) {
         window.currentSelectedThemeId = id;
-        document.getElementById('selected-theme-name').textContent = name;
-        document.getElementById('theme-filter').value = id;
+        const nameEl = document.getElementById('selected-theme-name');
+        if (nameEl) nameEl.textContent = name;
+        
+        const filterEl = document.getElementById('theme-filter');
+        if (filterEl) filterEl.value = id;
+        
         loadQuestions();
-    };
+    }
 
     window.loadQuestions = async function() {
         const themeId = document.getElementById('theme-filter').value;
