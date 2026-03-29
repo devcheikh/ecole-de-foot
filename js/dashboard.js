@@ -478,8 +478,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.currentSelectedThemeId = null;
 
     async function fetchQuizData() {
-        await fetchThemes();
-        await fetchResults();
+        console.log("Initialisation Quiz...");
+        try {
+            await fetchThemes();
+            await fetchResults();
+            console.log("Quiz data loaded correctly.");
+        } catch (e) {
+            alert("ERREUR CRITIQUE QUIZ: " + e.message);
+        }
     }
 
     async function fetchThemes() {
@@ -567,10 +573,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data, error } = await supabaseClient.from('quiz_results').select('*').order('completed_at', { ascending: false });
         
         if (error) { 
-            console.error("Erreur résultats:", error);
+            alert("ERREUR SUPABASE (Résultats): " + error.message);
             tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Erreur : ${error.message}</td></tr>`;
             return; 
         }
+
+        console.log("DEBUG: Résultats reçus =", data.length);
+        if (data.length > 0) alert("DEBUG: " + data.length + " résultats trouvés !");
+        else alert("DEBUG: Aucun résultat trouvé dans la table.");
 
         tbody.innerHTML = '';
         if (data.length === 0) {
