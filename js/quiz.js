@@ -105,11 +105,14 @@ let currentLevel = null;
 let currentQuestionIndex = 0;
 let score = 0;
 let currentQuestionsList = [];
+let timerInterval = null;
+let timeLeft = 30;
 
 // DOM Elements
 const selectionScreen = document.getElementById('selection-screen');
 const gameScreen = document.getElementById('game-screen');
 const resultScreen = document.getElementById('result-screen');
+const timerEl = document.getElementById('timer');
 const themeCards = document.querySelectorAll('.theme-grid .quiz-option-card');
 const levelCards = document.querySelectorAll('.level-grid .quiz-option-card');
 const startBtn = document.getElementById('start-quiz-btn');
@@ -158,6 +161,10 @@ function showQuestion() {
     questionText.textContent = question.q;
     optionsList.innerHTML = '';
     
+    // Reset and Start Timer
+    resetTimer();
+    startTimer();
+
     // Update progress bar
     const progress = (currentQuestionIndex / currentQuestionsList.length) * 100;
     progressBar.style.width = `${progress}%`;
@@ -175,6 +182,7 @@ function showQuestion() {
 }
 
 function handleAnswer(selectedIndex, btn) {
+    stopTimer();
     const question = currentQuestionsList[currentQuestionIndex];
     const allBtns = optionsList.querySelectorAll('.answer-btn');
     
@@ -222,4 +230,60 @@ function showResults() {
     else if (percentage >= 70) resultMsg.textContent = "Excellent travail ! Tu connais vraiment ton sujet.";
     else if (percentage >= 50) resultMsg.textContent = "Pas mal ! Mais tu peux faire encore mieux.";
     else resultMsg.textContent = "Continue d'apprendre, l'important c'est de progresser !";
+}
+
+// Timer Logic
+function startTimer() {
+    timeLeft = 30;
+    timerEl.textContent = timeLeft;
+    timerEl.classList.remove('warning');
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+
+        if (timeLeft <= 10) {
+            timerEl.classList.add('warning');
+        }
+
+        if (timeLeft <= 0) {
+            stopTimer();
+            handleTimeout();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+function resetTimer() {
+    stopTimer();
+    if (timerEl) {
+        timerEl.classList.remove('warning');
+        timerEl.textContent = "30";
+    }
+}
+
+function handleTimeout() {
+    const question = currentQuestionsList[currentQuestionIndex];
+    const allBtns = optionsList.querySelectorAll('.answer-btn');
+    
+    // Disable all buttons
+    allBtns.forEach(b => b.inert = true);
+
+    // Show correct answer
+    allBtns[question.correct].classList.add('correct');
+    allBtns[question.correct].querySelector('i').className = 'fas fa-check-circle';
+    allBtns[question.correct].querySelector('i').style.opacity = '1';
+
+    // Move to next question
+    setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < currentQuestionsList.length) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    }, 1500);
 }
