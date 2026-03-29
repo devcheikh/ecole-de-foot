@@ -237,7 +237,7 @@ nav .container {
     background-position: center;
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
-    transform: scale(1.05);
+    transform: scale(1);
 }
 
 .hero-slide.active {
@@ -254,8 +254,8 @@ nav .container {
 }
 
 @keyframes kenBurns {
-    from { transform: scale(1.05); }
-    to { transform: scale(1.15); }
+    from { transform: scale(1); }
+    to { transform: scale(1.06); }
 }
 
 /* Floating balls and glow removed for slider clarity */
