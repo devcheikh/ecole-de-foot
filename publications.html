@@ -16,7 +16,7 @@
         <div class="container">
             <a href="index.html" class="logo">
                 <img src="assets/images/logo.jpg" alt="Avenir de Thiawlene" class="logo-img">
-                AVENIR DE THIAWLENE
+                <span class="logo-text">AVENIR DE THIAWLENE</span>
             </a>
             <ul class="nav-links">
                 <li><a href="index.html">Accueil</a></li>
@@ -24,6 +24,9 @@
                 <li><a href="publications.html" class="active">Publications</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-primary">Connexion</a>
+            </div>
             <button class="hamburger" id="hamburger">
                 <span></span>
                 <span></span>
@@ -84,6 +87,23 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
+    <script>
+        // Inline check for dashboard link
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    const navActions = document.querySelector('.nav-actions');
+                    if (navActions) {
+                        navActions.innerHTML = `
+                            <a href="dashboard.html" class="btn btn-outline" style="margin-right: 1rem; color: var(--secondary); border-color: var(--secondary);">Admin</a>
+                            <a href="login.html" class="btn btn-primary">Mes Joueurs</a>
+                        `;
+                    }
+                }
+            } catch (e) {}
+        });
+    </script>
     <script src="js/script.js"></script>
     <script src="js/publications.js"></script>
 </body>

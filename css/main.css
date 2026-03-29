@@ -80,6 +80,7 @@ nav .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 .logo {
@@ -95,7 +96,12 @@ nav .container {
     height: 40px;
     width: auto;
     object-fit: contain;
-    border-radius: 0; /* Logos typically don't need the global radius */
+    border-radius: 0;
+}
+
+.logo-text {
+    white-space: nowrap;
+    transition: var(--transition);
 }
 
 .nav-links {
@@ -549,9 +555,7 @@ footer {
         right: 0;
     }
 
-    .nav-actions {
-        display: none;
-    }
+
 
     .hero {
         text-align: center;
@@ -572,6 +576,34 @@ footer {
 
     .hero p {
         font-size: 1.1rem;
+    }
+
+    .logo-text {
+        font-size: 1rem;
+    }
+
+    /* On very small devices, hide the logo text to make room for buttons */
+    @media (max-width: 400px) {
+        .logo-text {
+            display: none;
+        }
+    }
+
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        margin-right: 1.5rem;
+    }
+
+    .nav-actions .btn {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .hamburger {
+        margin-left: 0;
     }
 
     .grid {
