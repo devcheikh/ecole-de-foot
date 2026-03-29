@@ -661,3 +661,4 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('q_id').value = '';
         }
     };
+});
