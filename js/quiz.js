@@ -116,6 +116,14 @@ startBtn.onclick = async () => {
     currentQuestionsList = data;
     selectionScreen.style.display = 'none';
     gameScreen.style.display = 'block';
+    
+    // Add welcome toast/overlay temporarily
+    const welcome = document.createElement('div');
+    welcome.style = "position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:var(--primary); color:white; padding:2rem; border-radius:20px; z-index:1000; font-size:1.5rem; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.3); text-align:center; animation: fadeInOut 2s forwards;";
+    welcome.innerHTML = `<i class="fas fa-bolt" style="display:block; font-size:3rem; margin-bottom:1rem;"></i>Prêt, ${playerName} ?<br>C'est parti !`;
+    document.body.appendChild(welcome);
+    setTimeout(() => welcome.remove(), 2000);
+
     showQuestion();
 };
 
@@ -176,16 +184,19 @@ async function showResults() {
     resultScreen.style.display = 'block';
     
     const percentage = Math.round((score / currentQuestionsList.length) * 100);
+    const resultTitle = document.getElementById('result-title');
+    const playerName = document.getElementById('player-name').value.trim();
+    
     scoreDisplay.textContent = `${percentage}%`;
     scoreDetails.textContent = `${score} bonnes réponses sur ${currentQuestionsList.length}`;
     
-    const resultMsg = document.getElementById('result-message');
     if (percentage === 100) {
-        resultMsg.innerHTML = `<span style="color:var(--primary); font-size:1.5rem; display:block; margin-bottom:1rem;">🏆 SCORE PARFAIT ! 🏆</span> Félicitations ! Tu as gagné un CADEAU. Le club va te contacter prochainement sur WhatsApp !`;
-    } else if (percentage >= 70) {
-        resultMsg.textContent = "Excellent travail ! Tu connais vraiment ton sujet.";
+        resultTitle.textContent = `Félicitations ${playerName} ! 🏆`;
+        resultMsg.innerHTML = `<span style="color:var(--primary); font-size:1.2rem; display:block; margin-bottom:1rem;">SCORE PARFAIT !</span> Tu as gagné un CADEAU. Le club va te contacter prochainement sur WhatsApp !`;
     } else {
-        resultMsg.textContent = "Continue d'apprendre, l'important c'est de progresser !";
+        resultTitle.textContent = `Bien joué ${playerName} !`;
+        if (percentage >= 70) resultMsg.textContent = "Excellent travail ! Tu connais vraiment ton sujet.";
+        else resultMsg.textContent = "Continue d'apprendre, l'important c'est de progresser !";
     }
 
     // Save Result to Supabase
