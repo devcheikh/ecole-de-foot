@@ -199,7 +199,7 @@ async function showResults() {
     }
 
     // Save Result to Supabase
-    saveResult();
+    await saveResult();
 }
 
 async function saveResult() {
@@ -217,8 +217,10 @@ async function saveResult() {
 
     if (error) {
         console.error("Erreur de sauvegarde:", error);
-        // Si ça échoue, c'est probablement un problème de RLS ou de connexion
-        alert("Attention : Votre score n'a pas pu être enregistré. Vérifiez la configuration Supabase (RLS).");
+        alert("Oups ! Votre score n'a pas pu être enregistré en ligne (vérifiez la configuration Supabase RLS).");
+    } else {
+        console.log("Score enregistré avec succès !");
+        alert("Votre score a été enregistré avec succès !");
     }
 }
 

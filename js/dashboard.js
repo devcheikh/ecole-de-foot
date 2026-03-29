@@ -546,8 +546,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     async function fetchResults() {
+        console.log("Chargement des résultats du quiz...");
         const { data, error } = await supabaseClient.from('quiz_results').select('*').order('completed_at', { ascending: false });
-        if (error) { console.error(error); return; }
+        if (error) { 
+            console.error("Erreur fetching results:", error); 
+            return; 
+        }
+        console.log("Résultats reçus :", data);
 
         const tbody = document.getElementById('results-list');
         tbody.innerHTML = '';
