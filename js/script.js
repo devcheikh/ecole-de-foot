@@ -3,35 +3,59 @@
 */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Scroll Reveal Animation
-    function reveal() {
-        const reveals = document.querySelectorAll(".reveal");
-        reveals.forEach(el => {
-            const windowHeight = window.innerHeight;
-            const elementTop = el.getBoundingClientRect().top;
-            const elementVisible = 150;
-            if (elementTop < windowHeight - elementVisible) {
-                el.classList.add("active");
-            }
+    // --- Modern Animation System (Intersection Observer) ---
+    function initScrollAnimations() {
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const appearanceObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.classList.contains('stagger-reveal')) {
+                        // Handle staggering for group elements
+                        const parent = entry.target.parentElement;
+                        const siblings = Array.from(parent.querySelectorAll('.stagger-reveal'));
+                        const index = siblings.indexOf(entry.target);
+                        
+                        setTimeout(() => {
+                            entry.target.classList.add('active');
+                        }, index * 150);
+                    } else {
+                        entry.target.classList.add('active');
+                    }
+                    appearanceObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal, .stagger-reveal').forEach(el => {
+            appearanceObserver.observe(el);
         });
     }
 
-    // Staggered Reveal Animation
-    function staggerReveal() {
-        const reveals = document.querySelectorAll(".stagger-reveal");
-        reveals.forEach((el, index) => {
-            const windowHeight = window.innerHeight;
-            const elementTop = el.getBoundingClientRect().top;
-            const elementVisible = 100;
-            if (elementTop < windowHeight - elementVisible) {
-                setTimeout(() => {
-                    el.classList.add("active");
-                }, index * 200); // 200ms delay per element
-            }
-        });
+    // --- Hero Slider Logic ---
+    function initHeroSlider() {
+        const slides = document.querySelectorAll('.hero-slide');
+        if (slides.length === 0) return;
+
+        let currentSlide = 0;
+        const slideInterval = 5000; // 5 seconds per slide
+
+        // Ensure the first slide is visible immediately
+        slides[0].classList.add('active');
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        setInterval(nextSlide, slideInterval);
     }
 
-    // Parallax Effect
+    // --- Parallax Effect ---
     document.addEventListener('mousemove', (e) => {
         const parallaxElements = document.querySelectorAll('.parallax');
         const mouseX = e.clientX;
@@ -55,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.classList.toggle('active');
         });
 
-        // Close menu when clicking on a link
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
@@ -64,11 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Navbar Scroll Effect
     window.addEventListener("scroll", () => {
-        reveal();
-        staggerReveal();
-        
-        // Navbar Scroll Effect
         const nav = document.querySelector('nav');
         if (nav) {
             if (window.pageYOffset > 50) {
@@ -80,7 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    
-    reveal(); // Initial check
-    staggerReveal(); // Initial check
+
+    // --- Launch ---
+    initScrollAnimations();
+    initHeroSlider();
 });
