@@ -206,7 +206,7 @@ async function saveResult() {
     const playerName = document.getElementById('player-name').value;
     const playerPhone = document.getElementById('player-phone').value;
 
-    await supabaseClient.from('quiz_results').insert([{
+    const { error } = await supabaseClient.from('quiz_results').insert([{
         user_name: playerName,
         user_phone: playerPhone,
         theme_name: currentThemeName,
@@ -214,6 +214,12 @@ async function saveResult() {
         score: score,
         total_questions: currentQuestionsList.length
     }]);
+
+    if (error) {
+        console.error("Erreur de sauvegarde:", error);
+        // Si ça échoue, c'est probablement un problème de RLS ou de connexion
+        alert("Attention : Votre score n'a pas pu être enregistré. Vérifiez la configuration Supabase (RLS).");
+    }
 }
 
 // Global Timer Logic

@@ -48,10 +48,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Close sidebar on mobile
         if (window.innerWidth <= 1024) {
             const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('active')) {
+            if (sidebar && sidebar.classList.contains('active')) {
                 window.toggleSidebar();
             }
         }
+
+        // --- NEW: Dynamic Refresh on Tab Switch ---
+        if (tabId === 'players') fetchPlayers();
+        else if (tabId === 'matches') fetchMatches();
+        else if (tabId === 'gallery') fetchGallery();
+        else if (tabId === 'quiz') fetchQuizData();
     };
 
     // Modal control functions
