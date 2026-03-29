@@ -478,13 +478,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.currentSelectedThemeId = null;
 
     async function fetchQuizData() {
-        console.log("Initialisation Quiz...");
         try {
             await fetchThemes();
             await fetchResults();
-            console.log("Quiz data loaded correctly.");
         } catch (e) {
-            alert("ERREUR CRITIQUE QUIZ: " + e.message);
+            console.error("ERREUR QUIZ:", e);
         }
     }
 
@@ -572,46 +570,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("Rafraîchissement des participations...");
         const { data, error } = await supabaseClient.from('quiz_results').select('*').order('completed_at', { ascending: false });
         
-        if (error) { 
-            alert("ERREUR SUPABASE (Résultats): " + error.message);
-            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Erreur : ${error.message}</td></tr>`;
-            return; 
-        }
-
         console.log("DEBUG: Résultats reçus =", data.length);
-        if (data.length > 0) alert("DEBUG: " + data.length + " résultats trouvés !");
-        else alert("DEBUG: Aucun résultat trouvé dans la table.");
-
         tbody.innerHTML = '';
+        
         if (data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; opacity:0.5;">Aucun résultat enregistré.</td></tr>';
-            return;
+        } else {
+            // Stats & Rendering Logic
+            let winners = 0;
+            data.forEach(res => {
+                const isWinner = res.score === res.total_questions;
+                if (isWinner) winners++;
+                const tr = document.createElement('tr');
+                tr.className = isWinner ? 'winner-row' : '';
+                tr.innerHTML = `
+                    <td><div style="font-weight:700;">${res.user_name}</div></td>
+                    <td>${res.user_phone}</td>
+                    <td><span style="font-size:0.8rem; opacity:0.7;">${res.theme_name} / ${res.difficulty}</span></td>
+                    <td><span class="badge" style="background:${isWinner ? 'var(--primary)' : '#e2e8f0'}; color:${isWinner ? 'white' : 'inherit'};">${res.score}/${res.total_questions}</span></td>
+                    <td><button class="btn-icon delete" onclick="deleteResult('${res.id}')"><i class="fas fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('total-participants').textContent = data.length;
+            document.getElementById('total-winners').textContent = winners;
+            
+            // Stats Overview Tab
+            const ovPart = document.getElementById('stat-quiz-participants');
+            if (ovPart) ovPart.textContent = data.length;
+            const ovWin = document.getElementById('stat-quiz-winners');
+            if (ovWin) ovWin.textContent = winners;
         }
-
-        let winners = 0;
-        data.forEach(res => {
-            if (res.score === res.total_questions) winners++;
-            const isWinner = res.score === res.total_questions;
-            const tr = document.createElement('tr');
-            tr.className = isWinner ? 'winner-row' : '';
-            tr.innerHTML = `
-                <td><div style="font-weight:700;">${res.user_name}</div></td>
-                <td>${res.user_phone}</td>
-                <td><span style="font-size:0.8rem; opacity:0.7;">${res.theme_name} / ${res.difficulty}</span></td>
-                <td><span class="badge" style="background:${isWinner ? 'var(--primary)' : '#e2e8f0'}; color:${isWinner ? 'white' : 'inherit'};">${res.score}/${res.total_questions}</span></td>
-                <td><button class="btn-icon delete" onclick="deleteResult('${res.id}')"><i class="fas fa-trash"></i></button></td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById('total-participants').textContent = data.length;
-        document.getElementById('total-winners').textContent = winners;
-
-        // Update Overview stats if they exist
-        const ovPart = document.getElementById('stat-quiz-participants');
-        if (ovPart) ovPart.textContent = data.length;
-        const ovWin = document.getElementById('stat-quiz-winners');
-        if (ovWin) ovWin.textContent = winners;
     }
 
     // Modal Handlers
