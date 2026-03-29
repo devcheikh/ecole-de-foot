@@ -10,7 +10,8 @@ let currentQuestionIndex = 0;
 let score = 0;
 let currentQuestionsList = [];
 let timerInterval = null;
-let timeLeft = 30;
+let timeLeft = 60;
+let playerInfo = { name: "", phone: "" };
 
 // DOM Elements
 const selectionScreen = document.getElementById('selection-screen');
@@ -95,6 +96,9 @@ startBtn.onclick = async () => {
         alert("S'il te plaît, remplis ton nom et ton numéro WhatsApp pour participer !");
         return;
     }
+
+    playerInfo.name = playerName;
+    playerInfo.phone = playerPhone;
 
     startBtn.disabled = true;
     startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Préparation...';
@@ -203,24 +207,23 @@ async function showResults() {
 }
 
 async function saveResult() {
-    const playerName = document.getElementById('player-name').value;
-    const playerPhone = document.getElementById('player-phone').value;
-
-    const { error } = await supabaseClient.from('quiz_results').insert([{
-        user_name: playerName,
-        user_phone: playerPhone,
+    console.log("Tentative de sauvegarde pour:", playerInfo.name);
+    
+    const { data, error } = await supabaseClient.from('quiz_results').insert([{
+        user_name: playerInfo.name,
+        user_phone: playerInfo.phone,
         theme_name: currentThemeName,
         difficulty: currentLevel,
-        score: score,
-        total_questions: currentQuestionsList.length
+        score: parseInt(score),
+        total_questions: parseInt(currentQuestionsList.length)
     }]);
 
     if (error) {
-        console.error("Erreur de sauvegarde:", error);
-        alert("Oups ! Votre score n'a pas pu être enregistré en ligne (vérifiez la configuration Supabase RLS).");
+        console.error("Erreur Supabase Détallée:", error);
+        alert("ERREUR SAUVEGARDE: " + error.message + " (Code: " + error.code + ")");
     } else {
-        console.log("Score enregistré avec succès !");
-        alert("Votre score a été enregistré avec succès !");
+        console.log("Score enregistré !", data);
+        alert("Bravo " + playerInfo.name + " ! Ton score a été enregistré avec succès.");
     }
 }
 
