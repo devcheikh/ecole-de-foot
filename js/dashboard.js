@@ -54,7 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // --- NEW: Dynamic Refresh on Tab Switch ---
-        if (tabId === 'players') fetchPlayers();
+        if (tabId === 'overview') fetchQuizData(); // Now also refresh overview stats!
+        else if (tabId === 'players') fetchPlayers();
         else if (tabId === 'matches') fetchMatches();
         else if (tabId === 'gallery') fetchGallery();
         else if (tabId === 'quiz') fetchQuizData();
@@ -452,12 +453,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- REALTIME UPDATES (TOTAL SYNC) ---
     const quizChannel = supabaseClient.channel('quiz-total-sync');
-    
     quizChannel
         .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_results' }, () => fetchResults())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_themes' }, () => fetchThemes())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_questions' }, () => loadQuestions())
         .subscribe();
+
+    // FALLBACK: Auto-refresh stats every 15s in case realtime replication is not enabled
+    setInterval(() => {
+        fetchQuizData();
+    }, 15000);
 
     // --- Quiz Management Functions ---
     window.currentSelectedThemeId = null;
@@ -604,6 +609,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (winnersEl) winnersEl.textContent = winners;
         if (ovPartEl) ovPartEl.textContent = total;
         if (ovWinEl) ovWinEl.textContent = winners;
+
+        // Visual indicator of last sync
+        const lastUpd = document.getElementById('last-update-time');
+        if (lastUpd) lastUpd.textContent = "Mis à jour à " + new Date().toLocaleTimeString();
     }
 
     // Modal Handlers
