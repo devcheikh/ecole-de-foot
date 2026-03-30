@@ -62,6 +62,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         else if (tabId === 'audience') fetchAudienceData();
     };
 
+    // Mobile Sidebar Toggle
+    window.toggleSidebar = function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            const icon = document.querySelector('#mobile-toggle i');
+            if (sidebar.classList.contains('active')) {
+                icon?.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon?.classList.replace('fa-times', 'fa-bars');
+            }
+        }
+    };
+
     // Modal control functions
     window.openModal = function(modalId) {
         const modal = document.getElementById(modalId);
