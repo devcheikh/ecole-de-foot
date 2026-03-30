@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         else if (tabId === 'matches') fetchMatches();
         else if (tabId === 'gallery') fetchGallery();
         else if (tabId === 'quiz') fetchQuizData();
+        else if (tabId === 'audience') fetchAudienceData();
     };
 
     // Modal control functions
@@ -450,6 +451,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchMatches();
     fetchGallery();
     fetchQuizData();
+    fetchAudienceData();
 
     // --- REALTIME UPDATES (TOTAL SYNC) ---
     const quizChannel = supabaseClient.channel('quiz-total-sync');
@@ -462,6 +464,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // FALLBACK: Auto-refresh stats every 15s in case realtime replication is not enabled
     setInterval(() => {
         fetchQuizData();
+        fetchAudienceData();
     }, 15000);
 
     // --- Quiz Management Functions ---
@@ -709,6 +712,114 @@ document.addEventListener('DOMContentLoaded', async () => {
             await fetchQuizData(); // Refresh counts
             e.target.reset();
             document.getElementById('q_id').value = '';
+        }
+    };
+
+    // --- Audience & Tracking Functions ---
+    window.fetchAudienceData = async function() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('site_tracking')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error("Audience fetch error:", error);
+                return;
+            }
+
+            // Stat Cards
+            let uniqueSessions = new Set();
+            let devicesCounts = { Desktop: 0, Mobile: 0, Tablet: 0, Unknown: 0 };
+            let pagesCounts = {};
+
+            data.forEach(row => {
+                uniqueSessions.add(row.session_id);
+                devicesCounts[row.device_type] = (devicesCounts[row.device_type] || 0) + 1;
+                pagesCounts[row.page_path] = (pagesCounts[row.page_path] || 0) + 1;
+            });
+
+            // Find top device
+            let topDevice = '-';
+            let maxDeviceCount = 0;
+            for (const [device, count] of Object.entries(devicesCounts)) {
+                if (count > maxDeviceCount) {
+                    maxDeviceCount = count;
+                    topDevice = device;
+                }
+            }
+
+            // Update DOM
+            const elTotalVisits = document.getElementById('stat-total-visits');
+            const elUniqueVisits = document.getElementById('stat-unique-visitors');
+            const elTopDevice = document.getElementById('stat-top-device');
+            
+            if (elTotalVisits) elTotalVisits.textContent = data.length;
+            if (elUniqueVisits) elUniqueVisits.textContent = uniqueSessions.size;
+            if (elTopDevice) elTopDevice.textContent = topDevice;
+
+            // Page Table
+            const topPagesEl = document.getElementById('popular-pages-list');
+            if (topPagesEl) {
+                const sortedPages = Object.entries(pagesCounts).sort((a, b) => b[1] - a[1]);
+                if (sortedPages.length === 0) {
+                    topPagesEl.innerHTML = '<tr><td colspan="2" style="text-align:center; padding: 2rem;">Aucune donnée</td></tr>';
+                } else {
+                    topPagesEl.innerHTML = sortedPages.map(page => `
+                        <tr>
+                            <td style="font-weight: 600;">${page[0]}</td>
+                            <td><span class="badge badge-info">${page[1]} vues</span></td>
+                        </tr>
+                    `).join('');
+                }
+            }
+
+            // Breakdown
+            const breakdownEl = document.getElementById('audience-breakdown');
+            if (breakdownEl) {
+                let proportionHTML = '';
+                const totalDevices = data.length || 1;
+                for (const [device, count] of Object.entries(devicesCounts)) {
+                    if (count > 0) {
+                        const perc = Math.round((count / totalDevices) * 100);
+                        let colorStr = device === 'Mobile' ? '#f59e0b' : (device === 'Desktop' ? '#10b981' : '#3b82f6');
+                        proportionHTML += `
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                                    <span style="font-weight: 600;"><i class="fas fa-${device === 'Mobile' ? 'mobile-alt' : (device === 'Desktop' ? 'laptop' : 'tablet-alt')}"></i> ${device}</span>
+                                    <span>${perc}% (${count})</span>
+                                </div>
+                                <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                    <div style="width: ${perc}%; height: 100%; background: ${colorStr}; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                breakdownEl.innerHTML = proportionHTML || '<div style="text-align: center; opacity: 0.5; padding: 2rem;">Aucune donnée</div>';
+            }
+
+            // Log table
+            const logsEl = document.getElementById('visit-logs-list');
+            if (logsEl) {
+                if (data.length === 0) {
+                    logsEl.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">Aucune visite enregistrée</td></tr>';
+                } else {
+                    const recentLogs = data.slice(0, 50); // Show last 50
+                    logsEl.innerHTML = recentLogs.map(log => `
+                        <tr style="font-size: 0.85rem;">
+                            <td><span style="opacity: 0.7;">${new Date(log.created_at).toLocaleString()}</span></td>
+                            <td style="font-weight: 600;">${log.page_path}</td>
+                            <td>${log.device_type}</td>
+                            <td>${log.browser}</td>
+                            <td>${log.referrer || 'Direct'}</td>
+                        </tr>
+                    `).join('');
+                }
+            }
+
+        } catch (e) {
+            console.error(e);
         }
     };
 });
