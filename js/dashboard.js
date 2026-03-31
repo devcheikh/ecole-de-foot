@@ -743,6 +743,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (error) {
                 console.error("Audience fetch error:", error);
+                const el = document.getElementById('audience-breakdown');
+                if (el) el.innerHTML = `<div style="color:red; padding: 1rem;">Erreur Supabase: ${error.message || JSON.stringify(error)}</div>`;
                 return;
             }
 
