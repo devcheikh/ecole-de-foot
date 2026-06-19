@@ -54,7 +54,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // --- NEW: Dynamic Refresh on Tab Switch ---
-        if (tabId === 'overview') fetchQuizData(); // Now also refresh overview stats!
+        if (tabId === 'overview') {
+            fetchQuizData();
+            fetchPlayers();
+            fetchMatches();
+            fetchGallery();
+        }
         else if (tabId === 'players') fetchPlayers();
         else if (tabId === 'matches') fetchMatches();
         else if (tabId === 'gallery') fetchGallery();
@@ -472,17 +477,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchAudienceData();
 
     // --- REALTIME UPDATES (TOTAL SYNC) ---
-    const quizChannel = supabaseClient.channel('quiz-total-sync');
+    const quizChannel = supabaseClient.channel('db-total-sync');
     quizChannel
         .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_results' }, () => fetchResults())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_themes' }, () => fetchThemes())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_questions' }, () => loadQuestions())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => fetchMatches())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'joueurs' }, () => fetchPlayers())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery' }, () => fetchGallery())
         .subscribe();
 
     // FALLBACK: Auto-refresh stats every 15s in case realtime replication is not enabled
     setInterval(() => {
         fetchQuizData();
         fetchAudienceData();
+        fetchMatches();
+        fetchPlayers();
+        fetchGallery();
     }, 15000);
 
     // --- Quiz Management Functions ---
