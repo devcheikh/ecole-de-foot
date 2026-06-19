@@ -612,11 +612,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             data.forEach(res => {
                 const isWinner = res.score === res.total_questions;
                 if (isWinner) winners++;
+                
+                // Construct WhatsApp Link
+                const cleanPhone = res.user_phone ? res.user_phone.replace(/\D/g, "") : "";
+                let whatsappUrl = "";
+                if (cleanPhone) {
+                    let formattedPhone = cleanPhone;
+                    if (formattedPhone.length === 9 && (formattedPhone.startsWith("77") || formattedPhone.startsWith("78") || formattedPhone.startsWith("76") || formattedPhone.startsWith("70") || formattedPhone.startsWith("75"))) {
+                        formattedPhone = "221" + formattedPhone;
+                    }
+                    const text = isWinner 
+                        ? `Félicitations ${res.user_name} ! Tu as obtenu un score parfait de ${res.score}/${res.total_questions} au Quiz "${res.theme_name}" (${res.difficulty}) de l'académie Avenir de Thiawlene. Nous te contactons pour la remise de ton cadeau !` 
+                        : `Bonjour ${res.user_name} ! Merci d'avoir participé au Quiz "${res.theme_name}" (${res.difficulty}) de l'académie Avenir de Thiawlene. Ton score est de ${res.score}/${res.total_questions}. Continue comme ça !`;
+                    whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
+                }
+
                 const tr = document.createElement('tr');
                 tr.className = isWinner ? 'winner-row' : '';
                 tr.innerHTML = `
                     <td><div style="font-weight:700;">${res.user_name}</div></td>
-                    <td>${res.user_phone}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>${res.user_phone}</span>
+                            ${whatsappUrl ? `<a href="${whatsappUrl}" target="_blank" style="color: #25D366; font-size: 1.15rem; transition: transform 0.2s; display: inline-flex;" title="Contacter sur WhatsApp" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-whatsapp"></i></a>` : ''}
+                        </div>
+                    </td>
                     <td><span style="font-size:0.8rem; opacity:0.7;">${res.theme_name} / ${res.difficulty}</span></td>
                     <td><span class="badge" style="background:${isWinner ? 'var(--primary)' : '#e2e8f0'}; color:${isWinner ? 'white' : 'inherit'};">${res.score}/${res.total_questions}</span></td>
                     <td><button class="btn-icon delete" onclick="deleteResult('${res.id}')"><i class="fas fa-trash"></i></button></td>

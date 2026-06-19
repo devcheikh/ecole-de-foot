@@ -127,6 +127,13 @@
             <div id="score-display" class="result-score">0%</div>
             <p id="score-details" style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
             <div id="save-status-msg" style="margin-bottom: 2rem; font-weight: 700; display: none;"></div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; width: 100%; max-width: 400px; margin: 0 auto 2rem;">
+                <a id="whatsapp-claim-btn" href="#" target="_blank" class="btn" style="background-color: #25D366; color: white; display: none; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 1.2rem; font-size: 1.1rem; font-weight: 700; border-radius: 30px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); text-decoration: none; transition: transform 0.3s, box-shadow 0.3s;">
+                    <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Réclamer mon cadeau sur WhatsApp
+                </a>
+            </div>
+
             <div style="display: flex; gap: 1rem; justify-content: center;">
                 <button id="manual-save-btn" class="btn btn-secondary" style="padding: 1rem 2rem; display: none;" onclick="saveResult()">RÉ-ESSAYER ENREGISTREMENT</button>
                 <button onclick="location.reload()" class="btn btn-primary" style="padding: 1rem 2.5rem;">Rejouer</button>

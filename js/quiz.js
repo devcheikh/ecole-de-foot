@@ -27,6 +27,8 @@ const questionText = document.getElementById('question-text');
 const optionsList = document.getElementById('options-list');
 const scoreDisplay = document.getElementById('score-display');
 const scoreDetails = document.getElementById('score-details');
+const resultMsg = document.getElementById('result-message');
+const whatsappClaimBtn = document.getElementById('whatsapp-claim-btn');
 
 // Initial Load: Fetch Themes
 document.addEventListener('DOMContentLoaded', async () => {
@@ -195,11 +197,22 @@ async function showResults() {
     
     if (percentage === 100) {
         resultTitle.textContent = `Félicitations ${playerName} ! 🏆`;
-        resultMsg.innerHTML = `<span style="color:var(--primary); font-size:1.2rem; display:block; margin-bottom:1rem;">SCORE PARFAIT !</span> Tu as gagné un CADEAU. Le club va te contacter prochainement sur WhatsApp !`;
+        resultMsg.innerHTML = `<span style="color:var(--primary); font-size:1.2rem; display:block; margin-bottom:1rem;">SCORE PARFAIT !</span> Tu as gagné un CADEAU. Réclame-le en cliquant sur le bouton vert ci-dessous pour nous envoyer ton score sur WhatsApp !`;
+        
+        if (whatsappClaimBtn) {
+            const cleanPhone = playerInfo.phone.replace(/\D/g, "");
+            const textMsg = `Bonjour Avenir de Thiawlene ! Je m'appelle ${playerInfo.name} (Tél : ${cleanPhone}) et je viens de réussir le Quiz "${currentThemeName}" (Niveau: ${currentLevel}) avec un score parfait de 100%. Je souhaite réclamer mon cadeau !`;
+            whatsappClaimBtn.href = `https://wa.me/221773887672?text=${encodeURIComponent(textMsg)}`;
+            whatsappClaimBtn.style.display = 'flex';
+        }
     } else {
         resultTitle.textContent = `Bien joué ${playerName} !`;
         if (percentage >= 70) resultMsg.textContent = "Excellent travail ! Tu connais vraiment ton sujet.";
         else resultMsg.textContent = "Continue d'apprendre, l'important c'est de progresser !";
+        
+        if (whatsappClaimBtn) {
+            whatsappClaimBtn.style.display = 'none';
+        }
     }
 
     // Save Result to Supabase
