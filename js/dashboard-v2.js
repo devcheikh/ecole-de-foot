@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data: players, error } = await supabaseClient.from('joueurs').select('*').order('categorie', { ascending: true });
         if (error) return console.error('Error fetching players:', error);
 
-        playersCache = players;
+        playersCache = players || [];
 
         const tbody = document.getElementById('players-list');
         if (tbody) {
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let html = '';
             
             categories.forEach(cat => {
-                const catPlayers = players.filter(p => p.categorie === cat);
+                const catPlayers = playersCache.filter(p => p.categorie === cat);
                 if (catPlayers.length > 0) {
                     html += `
                         <tr class="category-divider">
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 3rem; color: var(--text-muted);">Aucun joueur trouvé</td></tr>';
         }
-        document.getElementById('stat-players').textContent = players.length;
+        document.getElementById('stat-players').textContent = playersCache.length;
     }
 
     window.showPlayerDetails = function(playerId) {
@@ -260,11 +260,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data: matches, error } = await supabaseClient.from('matches').select('*').order('date', { ascending: false });
         if (error) return console.error('Error fetching matches:', error);
 
-        matchesCache = matches;
+        matchesCache = matches || [];
 
         const tbody = document.getElementById('matches-list');
         if (tbody) {
-            tbody.innerHTML = matches.map(match => `
+            tbody.innerHTML = matchesCache.map(match => `
                 <tr>
                     <td><span style="font-weight: 600;">${new Date(match.date).toLocaleDateString()}</span></td>
                     <td>${match.adversaire}</td>
@@ -283,11 +283,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </td>
                 </tr>
             `).join('');
-            if (matches.length === 0) {
+            if (matchesCache.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 3rem; color: var(--text-muted);">Aucun match publié</td></tr>';
             }
         }
-        document.getElementById('stat-matches').textContent = matches.length;
+        document.getElementById('stat-matches').textContent = matchesCache.length;
     }
 
     window.editMatch = function(id) {
@@ -313,9 +313,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data: images, error } = await supabaseClient.from('gallery').select('*').order('created_at', { ascending: false });
         if (error) return console.error('Error fetching gallery:', error);
 
+        const imgList = images || [];
+
         const grid = document.getElementById('admin-gallery-grid');
         if (grid) {
-            grid.innerHTML = images.map(img => `
+            grid.innerHTML = imgList.map(img => `
                 <div class="gallery-item" style="position: relative; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow-sm); aspect-ratio: 1; group">
                     <img src="${img.image_url}" alt="${img.titre}" style="width: 100%; height: 100%; object-fit: cover;">
                     <button onclick="deleteItem('gallery', '${img.id}')" style="position: absolute; top: 12px; right: 12px; width: 35px; height: 35px; border-radius: 50%; border: none; background: rgba(239, 68, 68, 0.9); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; opacity: 0;" class="delete-btn-gallery">
@@ -328,7 +330,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             `).join('');
         }
         const statGal = document.getElementById('stat-gallery');
-        if (statGal) statGal.textContent = images.length;
+        if (statGal) statGal.textContent = imgList.length;
     }
 
     window.deleteItem = async function(table, id) {
@@ -512,6 +514,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data, error } = await supabaseClient.from('quiz_themes').select('*').order('created_at', { ascending: false });
         if (error) { console.error(error); return; }
         
+        const themes = data || [];
         const tbody = document.getElementById('themes-list');
         const themeFilter = document.getElementById('theme-filter');
         const qThemeId = document.getElementById('q_theme_id');
@@ -520,7 +523,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         themeFilter.innerHTML = '<option value="">Tous les thèmes</option>';
         qThemeId.innerHTML = '<option value="" disabled selected>Choisir un thème</option>';
 
-        data.forEach(theme => {
+        themes.forEach(theme => {
             // Table Row
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -539,8 +542,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // Auto-select first theme if nothing selected and we have data
-        if (data.length > 0 && themeFilter && !themeFilter.value) {
-            selectTheme(data[0].id, data[0].name);
+        if (themes.length > 0 && themeFilter && !themeFilter.value) {
+            selectTheme(themes[0].id, themes[0].name);
         }
     }
 
@@ -572,15 +575,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (error) { console.error(error); return; }
 
+        const questions = data || [];
         const tbody = document.getElementById('questions-list');
         tbody.innerHTML = '';
 
-        if (data.length === 0) {
+        if (questions.length === 0) {
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; opacity:0.5;">Aucune question trouvée pour ce niveau.</td></tr>';
             return;
         }
 
-        data.forEach(q => {
+        questions.forEach(q => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="max-width: 300px; white-space: normal;">${q.question}</td>
@@ -613,19 +617,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Logic stats
-        const total = data.length || 0;
+        const results = data || [];
+        const total = results.length || 0;
         let winners = 0;
         
         tbody.innerHTML = '';
         if (total === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; opacity:0.5;">Aucun résultat enregistré.</td></tr>';
         } else {
-            data.forEach(res => {
+            results.forEach(res => {
                 const isWinner = res.score === res.total_questions;
                 if (isWinner) winners++;
                 
                 // Construct WhatsApp Link
-                const cleanPhone = res.user_phone ? res.user_phone.replace(/\D/g, "") : "";
+                const cleanPhone = res.user_phone ? String(res.user_phone).replace(/\D/g, "") : "";
                 let whatsappUrl = "";
                 if (cleanPhone) {
                     let formattedPhone = cleanPhone;
@@ -779,12 +784,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
+            const trackingData = data || [];
+
             // Stat Cards
             let uniqueSessions = new Set();
             let devicesCounts = { Desktop: 0, Mobile: 0, Tablet: 0, Unknown: 0 };
             let pagesCounts = {};
 
-            data.forEach(row => {
+            trackingData.forEach(row => {
                 uniqueSessions.add(row.session_id);
                 devicesCounts[row.device_type] = (devicesCounts[row.device_type] || 0) + 1;
                 pagesCounts[row.page_path] = (pagesCounts[row.page_path] || 0) + 1;
@@ -805,7 +812,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const elUniqueVisits = document.getElementById('stat-unique-visitors');
             const elTopDevice = document.getElementById('stat-top-device');
             
-            if (elTotalVisits) elTotalVisits.textContent = data.length;
+            if (elTotalVisits) elTotalVisits.textContent = trackingData.length;
             if (elUniqueVisits) elUniqueVisits.textContent = uniqueSessions.size;
             if (elTopDevice) elTopDevice.textContent = topDevice;
 
@@ -829,7 +836,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const breakdownEl = document.getElementById('audience-breakdown');
             if (breakdownEl) {
                 let proportionHTML = '';
-                const totalDevices = data.length || 1;
+                const totalDevices = trackingData.length || 1;
                 for (const [device, count] of Object.entries(devicesCounts)) {
                     if (count > 0) {
                         const perc = Math.round((count / totalDevices) * 100);
@@ -853,10 +860,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Log table
             const logsEl = document.getElementById('visit-logs-list');
             if (logsEl) {
-                if (data.length === 0) {
+                if (trackingData.length === 0) {
                     logsEl.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">Aucune visite enregistrée</td></tr>';
                 } else {
-                    const recentLogs = data.slice(0, 50); // Show last 50
+                    const recentLogs = trackingData.slice(0, 50); // Show last 50
                     logsEl.innerHTML = recentLogs.map(log => `
                         <tr style="font-size: 0.85rem;">
                             <td><span style="opacity: 0.7;">${new Date(log.created_at).toLocaleString()}</span></td>
