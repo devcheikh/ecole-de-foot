@@ -1,0 +1,567 @@
+/*
+    Avenir de Thiawlene - Jeu d'Exploration
+    Styles dédiés (sélection de missions + écran de jeu)
+*/
+
+/* --- Selection screen --- */
+.explo-container {
+    padding-top: 2rem;
+}
+
+.explo-player-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.explo-player-bar label {
+    font-weight: 700;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.explo-player-bar input {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.explo-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.explo-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.25rem;
+    border-radius: 30px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-main);
+}
+
+.explo-filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.explo-filter-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.explo-mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.75rem;
+    margin-bottom: 4rem;
+}
+
+.explo-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+}
+
+.explo-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.explo-card-top {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+}
+
+.explo-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.explo-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.explo-theme-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.explo-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.explo-card-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.explo-card-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1rem;
+}
+
+.explo-card-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.explo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.explo-badge-new { background: #f1f5f9; color: var(--text-muted); }
+.explo-badge-paused { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+.explo-badge-done { background: rgba(34, 197, 94, 0.12); color: var(--primary-hover); }
+
+.explo-btn-outline {
+    background: transparent;
+    color: var(--secondary);
+    border: 2px solid #e2e8f0;
+}
+
+.explo-btn-outline:hover {
+    background: var(--secondary);
+    color: white;
+    border-color: var(--secondary);
+}
+
+/* --- Play screen --- */
+.explo-play-body {
+    background: var(--bg-light);
+    padding-top: 84px;
+}
+
+.explo-play-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+    padding: 1rem 0;
+}
+
+.explo-play-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.explo-back-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.explo-back-link:hover {
+    color: var(--primary);
+}
+
+.explo-play-title {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.explo-play-title h1 {
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.explo-play-main {
+    padding: 2rem 1.5rem 4rem;
+    max-width: 900px;
+}
+
+.explo-progress-label {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+.explo-map-wrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 0.75rem;
+}
+
+#explo-map {
+    height: 360px;
+    width: 100%;
+    background: #e2e8f0;
+}
+
+.explo-map-fallback {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    gap: 0.5rem;
+    flex-direction: column;
+}
+
+.explo-map-fallback i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.explo-map-hud {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.explo-geo-status {
+    background: rgba(15, 23, 42, 0.85);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem 0.85rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.explo-distance-readout {
+    background: white;
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    box-shadow: var(--shadow-md);
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    transition: var(--transition);
+}
+
+.explo-distance-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.explo-distance-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--secondary);
+}
+
+.explo-distance-close .explo-distance-value {
+    color: var(--primary);
+}
+
+.explo-route-legend {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    padding: 0 0.25rem;
+}
+
+.explo-route-legend strong {
+    color: var(--text-main);
+}
+
+.explo-map-icon-start, .explo-map-icon-end {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.explo-map-icon-start { background: var(--primary); }
+.explo-map-icon-end { background: #ef4444; }
+
+.explo-map-icon-task {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--secondary);
+    color: var(--secondary);
+    font-weight: 800;
+    font-size: 0.75rem;
+}
+
+.explo-map-icon-user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+}
+
+.explo-user-dot {
+    width: 16px;
+    height: 16px;
+    background: #3b82f6;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35);
+    display: block;
+    animation: explo-pulse 1.8s infinite;
+}
+
+@keyframes explo-pulse {
+    0% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35); }
+    50% { box-shadow: 0 0 0 9px rgba(59, 130, 246, 0.12); }
+    100% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35); }
+}
+
+.explo-task-panel {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid var(--primary);
+}
+
+.explo-task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.explo-task-index {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--primary);
+}
+
+.explo-task-points {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #b45309;
+    background: rgba(245, 158, 11, 0.12);
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+}
+
+.explo-task-panel h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.explo-task-panel p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.explo-complete-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.05rem;
+}
+
+.explo-task-list-wrap h3 {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+}
+
+.explo-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.explo-task-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: white;
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    box-shadow: var(--shadow-sm);
+    opacity: 0.55;
+}
+
+.explo-task-item.is-done {
+    opacity: 1;
+}
+
+.explo-task-item.is-done .explo-task-item-icon {
+    color: var(--primary);
+}
+
+.explo-task-item.is-current {
+    opacity: 1;
+    border: 2px solid var(--primary);
+}
+
+.explo-task-item.is-current .explo-task-item-icon {
+    color: var(--primary);
+}
+
+.explo-task-item-icon {
+    color: #cbd5e1;
+    width: 20px;
+    text-align: center;
+}
+
+.explo-task-item-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.explo-task-item-points {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+/* --- Overlays (pause / completion) --- */
+.explo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.explo-overlay-card {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
+.explo-overlay-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.explo-overlay-card p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.explo-points-total {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 1.75rem;
+}
+
+.explo-overlay-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+@media (max-width: 640px) {
+    .explo-play-title h1 {
+        font-size: 1.05rem;
+    }
+    .explo-task-panel {
+        padding: 1.5rem;
+    }
+    .explo-overlay-card {
+        padding: 2.25rem 1.75rem;
+    }
+}

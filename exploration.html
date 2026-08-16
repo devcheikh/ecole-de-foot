@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu d'Exploration | Avenir de Thiawlene</title>
+    <meta name="description" content="Choisis une mission et pars à l'exploration ! Un jeu pour les jeunes, avec des thèmes Sport, Famille et Général.">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/exploration.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.jpg" alt="Avenir de Thiawlene" class="logo-img">
+                <span class="logo-text">AVENIR DE THIAWLENE</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="programmes.html">Programmes</a></li>
+                <li><a href="publications.html">Publications</a></li>
+                <li><a href="quiz.html">Quiz</a></li>
+                <li><a href="exploration.html" class="active">Exploration</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-primary">Connexion</a>
+            </div>
+            <button class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 280px; height: 38vh; display: flex; align-items: center; justify-content: center; text-align: center;">
+        <div class="container">
+            <h1>Le Jeu d'Exploration</h1>
+            <p>Choisis une mission, suis le parcours, et relève les défis en chemin !</p>
+        </div>
+    </header>
+
+    <main class="quiz-container explo-container">
+
+        <div class="explo-player-bar">
+            <label for="player-name-input"><i class="fas fa-user-astronaut"></i> Ton prénom d'explorateur</label>
+            <input type="text" id="player-name-input" placeholder="Ex : Awa" maxlength="30">
+        </div>
+
+        <div class="explo-filters">
+            <button class="explo-filter-btn active" data-theme="all">
+                <i class="fas fa-layer-group"></i> Toutes les missions
+            </button>
+            <button class="explo-filter-btn" data-theme="sport">
+                <i class="fas fa-futbol"></i> Sport
+            </button>
+            <button class="explo-filter-btn" data-theme="famille">
+                <i class="fas fa-people-roof"></i> Famille
+            </button>
+            <button class="explo-filter-btn" data-theme="general">
+                <i class="fas fa-map-location-dot"></i> Général
+            </button>
+        </div>
+
+        <div id="mission-grid" class="explo-mission-grid">
+            <!-- Populated by js/exploration-list.js -->
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <span class="footer-logo">AVENIR DE THIAWLENE</span>
+                    <p style="opacity: 0.7;">L'excellence du football à Thiawlene, Rufisque, Sénégal. Formateur de talents depuis des années.</p>
+                </div>
+                <div class="footer-links" style="list-style: none;">
+                    <h4 style="color: white; margin-bottom: 1.5rem;">Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="programmes.html">Programmes</a></li>
+                        <li><a href="exploration.html">Exploration</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links" style="list-style: none;">
+                    <h4 style="color: white; margin-bottom: 1.5rem;">Contact</h4>
+                    <ul>
+                        <li><i class="fas fa-location-dot"></i> Thiawlene, Rufisque</li>
+                        <li><i class="fas fa-phone"></i> +221 77 388 76 72 / 77 420 44 23</li>
+                        <li><i class="fas fa-envelope"></i> cheikhtalibouyadiop@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mbodja fara from Avenir de Thiawlene. Tous droits réservés. 773887672</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/exploration-missions.js"></script>
+    <script src="js/exploration-utils.js"></script>
+    <script src="js/exploration-list.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
