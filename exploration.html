@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu d'Exploration | Avenir de Thiawlene</title>
-    <meta name="description" content="Choisis une mission et pars à l'exploration ! Un jeu pour les jeunes, avec des thèmes Sport, Famille et Général.">
+    <title>Devine le Quartier | Avenir de Thiawlene</title>
+    <meta name="description" content="Regarde la photo et devine dans quel quartier elle a été prise ! Un jeu pour les jeunes explorateurs de Thiawlene.">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/exploration.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,37 +41,52 @@
 
     <header class="hero" style="min-height: 280px; height: 38vh; display: flex; align-items: center; justify-content: center; text-align: center;">
         <div class="container">
-            <h1>Le Jeu d'Exploration</h1>
-            <p>Choisis une mission, suis le parcours, et relève les défis en chemin !</p>
+            <h1>Devine le Quartier</h1>
+            <p>Regarde bien la photo... et devine dans quel quartier elle a été prise !</p>
         </div>
     </header>
 
-    <main class="quiz-container explo-container">
+    <main class="quiz-container">
 
-        <div class="explo-player-bar">
-            <label for="player-name-input"><i class="fas fa-user-astronaut"></i> Ton prénom d'explorateur</label>
-            <input type="text" id="player-name-input" placeholder="Ex : Awa" maxlength="30">
+        <!-- Selection Screen -->
+        <div id="selection-screen" class="quiz-card reveal active">
+            <div class="quiz-header">
+                <h2>Prêt à jouer ?</h2>
+                <p>On te montre une série de photos prises dans le quartier. À chaque photo, choisis le bon quartier parmi les propositions !</p>
+            </div>
+            <div style="max-width: 400px; margin: 2rem auto 0; text-align: left;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Ton prénom (optionnel)</label>
+                    <input type="text" id="player-name" class="form-input" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ex: Awa" maxlength="30">
+                </div>
+            </div>
+            <button id="start-game-btn" class="btn btn-primary" style="width: 100%; margin-top: 3rem; padding: 1.25rem; font-size: 1.2rem;">
+                Commencer <i class="fas fa-play" style="margin-left: 0.5rem;"></i>
+            </button>
+            <p id="empty-state-msg" style="display:none; text-align:center; color: var(--text-muted); margin-top: 2rem;"></p>
         </div>
 
-        <div class="explo-filters">
-            <button class="explo-filter-btn active" data-theme="all">
-                <i class="fas fa-layer-group"></i> Toutes les missions
-            </button>
-            <button class="explo-filter-btn" data-theme="sport">
-                <i class="fas fa-futbol"></i> Sport
-            </button>
-            <button class="explo-filter-btn" data-theme="famille">
-                <i class="fas fa-people-roof"></i> Famille
-            </button>
-            <button class="explo-filter-btn" data-theme="general">
-                <i class="fas fa-map-location-dot"></i> Général
-            </button>
+        <!-- Game Screen -->
+        <div id="game-screen" class="quiz-card" style="display: none;">
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="explo-photo-wrap">
+                <img id="quartier-photo" src="" alt="Photo à deviner">
+            </div>
+            <h3 class="question-text" style="margin-top: 2rem;">Dans quel quartier se trouve cette photo ?</h3>
+            <div id="options-list" class="options-list"></div>
         </div>
 
-        <div id="mission-grid" class="explo-mission-grid">
-            <!-- Populated by js/exploration-list.js -->
+        <!-- Result Screen -->
+        <div id="result-screen" class="quiz-card result-screen" style="display: none;">
+            <i class="fas fa-trophy" style="font-size: 4rem; color: #f59e0b; margin-bottom: 1.5rem;"></i>
+            <h2 id="result-title">Félicitations !</h2>
+            <p id="result-message">Tu connais bien ton quartier.</p>
+            <div id="score-display" class="result-score">0%</div>
+            <p id="score-details" style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
+            <button onclick="location.reload()" class="btn btn-primary" style="padding: 1rem 2.5rem;">Rejouer</button>
         </div>
-
     </main>
 
     <footer>
@@ -105,9 +120,10 @@
         </div>
     </footer>
 
-    <script src="js/exploration-missions.js"></script>
-    <script src="js/exploration-utils.js"></script>
-    <script src="js/exploration-list.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/adt-metrics.js"></script>
+    <script src="js/quartier-game.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
