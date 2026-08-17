@@ -1,0 +1,49 @@
+/*
+    Avenir de Thiawlene - Jeux Traditionnels
+    Styles dédiés au quiz culturel sur les jeux wolof
+*/
+
+.jt-source {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.jt-clue-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+}
+
+.jt-fun-fact {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.5rem;
+    animation: fadeIn 0.4s ease;
+}
+
+.jt-fun-fact i {
+    color: #f59e0b;
+    font-size: 1.25rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+
+.jt-fun-fact span {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-main);
+}

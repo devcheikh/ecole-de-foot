@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devine le Quartier | Avenir de Thiawlene</title>
-    <meta name="description" content="Regarde la photo et devine dans quel quartier elle a été prise ! Un jeu pour les jeunes explorateurs de Thiawlene.">
+    <title>Jeux Traditionnels | Avenir de Thiawlene</title>
+    <meta name="description" content="Découvre les jeux traditionnels wolof et sénégalais : le Simb, le Këm-Këm, le Thioubalo... Un quiz culturel pour les jeunes explorateurs.">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/exploration.css">
+    <link rel="stylesheet" href="css/jeux-traditionnels.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -25,8 +25,8 @@
                 <li><a href="programmes.html">Programmes</a></li>
                 <li><a href="publications.html">Publications</a></li>
                 <li><a href="quiz.html">Quiz</a></li>
-                <li><a href="exploration.html" class="active">Exploration</a></li>
-                <li><a href="jeux-traditionnels.html">Jeux Traditionnels</a></li>
+                <li><a href="exploration.html">Exploration</a></li>
+                <li><a href="jeux-traditionnels.html" class="active">Jeux Traditionnels</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
             <div class="nav-actions">
@@ -40,10 +40,10 @@
         </div>
     </nav>
 
-    <header class="hero" style="min-height: 280px; height: 38vh; display: flex; align-items: center; justify-content: center; text-align: center;">
+    <header class="hero" style="min-height: 300px; height: 42vh; display: flex; align-items: center; justify-content: center; text-align: center;">
         <div class="container">
-            <h1>Devine le Quartier</h1>
-            <p>Regarde bien la photo... et devine dans quel quartier elle a été prise !</p>
+            <h1>Jeux Traditionnels</h1>
+            <p>Zigala, Këm-Këm, Simb, Thioubalo... Devine le jeu wolof à partir de sa description !</p>
         </div>
     </header>
 
@@ -53,7 +53,7 @@
         <div id="selection-screen" class="quiz-card reveal active">
             <div class="quiz-header">
                 <h2>Prêt à jouer ?</h2>
-                <p>On te montre une série de photos prises dans le quartier. À chaque photo, choisis le bon quartier parmi les propositions !</p>
+                <p>On te décrit un jeu traditionnel sénégalais. À toi de deviner de quel jeu il s'agit, parmi les propositions !</p>
             </div>
             <div style="max-width: 400px; margin: 2rem auto 0; text-align: left;">
                 <div class="form-group">
@@ -64,7 +64,9 @@
             <button id="start-game-btn" class="btn btn-primary" style="width: 100%; margin-top: 3rem; padding: 1.25rem; font-size: 1.2rem;">
                 Commencer <i class="fas fa-play" style="margin-left: 0.5rem;"></i>
             </button>
-            <p id="empty-state-msg" style="display:none; text-align:center; color: var(--text-muted); margin-top: 2rem;"></p>
+            <p class="jt-source">
+                D'après le mémoire de DEA d'Iba Fall, <em>« La dimension éducative à travers les mythes, superstitions et jeux dans la société traditionnelle africaine : le cas du Sénégal »</em>, UCAD, 2009-2010.
+            </p>
         </div>
 
         <!-- Game Screen -->
@@ -72,18 +74,20 @@
             <div class="progress-container">
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
-            <div class="explo-photo-wrap">
-                <img id="quartier-photo" src="" alt="Photo à deviner">
-            </div>
-            <h3 class="question-text" style="margin-top: 2rem;">Dans quel quartier se trouve cette photo ?</h3>
+            <span class="jt-clue-label"><i class="fas fa-scroll"></i> Devine le jeu</span>
+            <h3 id="question-text" class="question-text">Chargement...</h3>
             <div id="options-list" class="options-list"></div>
+            <div id="fun-fact-box" class="jt-fun-fact" style="display:none;">
+                <i class="fas fa-lightbulb"></i>
+                <span id="fun-fact-text"></span>
+            </div>
         </div>
 
         <!-- Result Screen -->
         <div id="result-screen" class="quiz-card result-screen" style="display: none;">
             <i class="fas fa-trophy" style="font-size: 4rem; color: #f59e0b; margin-bottom: 1.5rem;"></i>
             <h2 id="result-title">Félicitations !</h2>
-            <p id="result-message">Tu connais bien ton quartier.</p>
+            <p id="result-message">Tu connais bien les jeux d'antan.</p>
             <div id="score-display" class="result-score">0%</div>
             <p id="score-details" style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
             <button onclick="location.reload()" class="btn btn-primary" style="padding: 1rem 2.5rem;">Rejouer</button>
@@ -101,8 +105,8 @@
                     <h4 style="color: white; margin-bottom: 1.5rem;">Navigation</h4>
                     <ul>
                         <li><a href="index.html">Accueil</a></li>
-                        <li><a href="programmes.html">Programmes</a></li>
                         <li><a href="exploration.html">Exploration</a></li>
+                        <li><a href="jeux-traditionnels.html">Jeux Traditionnels</a></li>
                         <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
@@ -121,10 +125,7 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js"></script>
-    <script src="js/adt-metrics.js"></script>
-    <script src="js/quartier-game.js"></script>
+    <script src="js/jeux-traditionnels.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
