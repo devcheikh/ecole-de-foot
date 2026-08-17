@@ -1,16 +1,16 @@
 /* Dashboard Design System - Avenir de Thiawlene */
 
 :root {
-    --primary: #10b981;
-    --primary-dark: #059669;
-    --primary-glow: rgba(16, 185, 129, 0.15);
-    --secondary: #0f172a;
+    --primary: #ea580c;
+    --primary-dark: #c2410c;
+    --primary-glow: rgba(234, 88, 12, 0.15);
+    --secondary: #171717;
     --accent: #3b82f6;
     --white: #ffffff;
-    --bg-body: #f8fafc;
-    --sidebar-bg: #0f172a;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
+    --bg-body: #fafaf9;
+    --sidebar-bg: #171717;
+    --text-main: #1c1917;
+    --text-muted: #78716c;
     --border-color: #e2e8f0;
     --radius-lg: 1.25rem;
     --radius-md: 0.85rem;

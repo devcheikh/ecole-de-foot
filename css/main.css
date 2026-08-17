@@ -4,14 +4,15 @@
 */
 
 :root {
-    --primary: #22c55e;
-    --primary-hover: #16a34a;
-    --secondary: #0f172a;
-    --accent: #10b981;
+    --primary: #ea580c;
+    --primary-hover: #c2410c;
+    --secondary: #171717;
+    --accent: #eab308;
+    --success: #16a34a;
     --white: #ffffff;
-    --bg-light: #f8fafc;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
+    --bg-light: #fafaf9;
+    --text-main: #1c1917;
+    --text-muted: #78716c;
     --glass: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
@@ -184,13 +185,13 @@ nav .container {
 .btn-primary {
     background-color: var(--primary);
     color: var(--white);
-    box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.39);
+    box-shadow: 0 4px 14px 0 rgba(234, 88, 12, 0.39);
 }
 
 .btn-primary:hover {
     background-color: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px 0 rgba(34, 197, 94, 0.45);
+    box-shadow: 0 8px 20px 0 rgba(234, 88, 12, 0.45);
 }
 
 .btn-outline {
@@ -249,7 +250,7 @@ nav .container {
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, rgba(15, 23, 42, 0.65) 0%, rgba(15, 23, 42, 0.2) 50%, rgba(15, 23, 42, 0.5) 100%);
+    background: linear-gradient(to right, rgba(23, 23, 23, 0.7) 0%, rgba(23, 23, 23, 0.25) 50%, rgba(23, 23, 23, 0.55) 100%);
     z-index: 2;
 }
 
@@ -333,7 +334,7 @@ section {
 .card-icon {
     width: 60px;
     height: 60px;
-    background: rgba(34, 197, 94, 0.1);
+    background: rgba(234, 88, 12, 0.1);
     color: var(--primary);
     display: flex;
     align-items: center;
@@ -458,7 +459,7 @@ footer {
     font-weight: 700;
     text-transform: uppercase;
 }
-.status-upcoming { background: rgba(34, 197, 94, 0.1); color: var(--primary); }
+.status-upcoming { background: rgba(234, 88, 12, 0.1); color: var(--primary); }
 .status-past { background: #f1f5f9; color: var(--text-muted); }
 
 .match-teams {
@@ -654,7 +655,7 @@ footer {
     text-decoration: none;
     font-weight: 700;
     font-size: 0.9rem;
-    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 10px 25px rgba(234, 88, 12, 0.4);
     z-index: 1000;
     animation: ctaPulse 2s infinite;
     transition: all 0.3s ease;
@@ -662,7 +663,7 @@ footer {
 
 .floating-cta:hover {
     transform: scale(1.05) translateY(-5px);
-    background: #16a34a;
+    background: var(--primary-hover);
 }
 
 .floating-cta i {
@@ -671,14 +672,14 @@ footer {
 
 @keyframes ctaPulse {
     0% {
-        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+        box-shadow: 0 10px 25px rgba(234, 88, 12, 0.4);
     }
     50% {
-        box-shadow: 0 10px 40px rgba(34, 197, 94, 0.7);
+        box-shadow: 0 10px 40px rgba(234, 88, 12, 0.7);
         transform: scale(1.05);
     }
     100% {
-        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+        box-shadow: 0 10px 25px rgba(234, 88, 12, 0.4);
     }
 }
 
@@ -733,7 +734,7 @@ footer {
 
 .quiz-option-card.active {
     border-color: var(--primary);
-    background: rgba(34, 197, 94, 0.05);
+    background: rgba(234, 88, 12, 0.05);
 }
 
 .quiz-option-card i {
@@ -791,9 +792,9 @@ footer {
 }
 
 .answer-btn.correct {
-    background: rgba(34, 197, 94, 0.1);
-    border-color: var(--primary);
-    color: var(--primary-hover);
+    background: rgba(22, 163, 74, 0.1);
+    border-color: var(--success);
+    color: #15803d;
 }
 
 .answer-btn.wrong {
