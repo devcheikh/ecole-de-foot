@@ -1,16 +1,23 @@
 /*
     Avenir de Thiawlene - Devine le Quartier
-    Le joueur regarde une photo et devine dans quel quartier elle a été prise.
+    Le joueur regarde une photo et devine dans quel quartier elle a été
+    prise, contre la montre pour récompenser la rapidité.
 */
 
 const ROUND_SIZE = 10;
 const CHOICES_PER_QUESTION = 4;
+const TIME_PER_QUESTION = 8;
+const BASE_POINTS = 50;
+const MAX_BONUS = 50;
 
 let allQuartiers = [];
 let roundQuestions = [];
 let currentIndex = 0;
 let score = 0;
+let totalPoints = 0;
 let playerName = '';
+let timeLeft = TIME_PER_QUESTION;
+let timerInterval = null;
 
 const selectionScreen = document.getElementById('selection-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -22,8 +29,11 @@ const photoEl = document.getElementById('quartier-photo');
 const optionsList = document.getElementById('options-list');
 const scoreDisplay = document.getElementById('score-display');
 const scoreDetails = document.getElementById('score-details');
+const pointsDetails = document.getElementById('points-details');
+const pointsLive = document.getElementById('points-live');
 const resultTitle = document.getElementById('result-title');
 const resultMsg = document.getElementById('result-message');
+const timerEl = document.getElementById('timer');
 
 document.addEventListener('DOMContentLoaded', async () => {
     const [quartiersRes, imagesRes] = await Promise.all([
@@ -56,6 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         gameScreen.style.display = 'block';
         currentIndex = 0;
         score = 0;
+        totalPoints = 0;
+        pointsLive.textContent = '0';
         showQuestion();
     };
 });
@@ -85,28 +97,57 @@ function showQuestion() {
 
     const options = shuffle([correctName, ...distractors]);
 
-    options.forEach(name => {
+    options.forEach((name, i) => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
+        btn.dataset.index = i + 1;
         btn.innerHTML = `<span>${name}</span><i class="fas fa-chevron-right" style="opacity: 0.3;"></i>`;
         btn.onclick = () => handleAnswer(name, correctName, btn);
         optionsList.appendChild(btn);
     });
+
+    startTimer(correctName);
+}
+
+function startTimer(correctName) {
+    clearInterval(timerInterval);
+    timeLeft = TIME_PER_QUESTION;
+    timerEl.textContent = timeLeft;
+    timerEl.classList.remove('warning');
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 3) timerEl.classList.add('warning');
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            handleAnswer(null, correctName, null);
+        }
+    }, 1000);
 }
 
 function handleAnswer(selected, correctName, btn) {
+    clearInterval(timerInterval);
     const allBtns = optionsList.querySelectorAll('.answer-btn');
     allBtns.forEach(b => b.inert = true);
 
-    if (selected === correctName) {
+    const isCorrect = selected === correctName;
+
+    if (isCorrect) {
         btn.classList.add('correct');
         btn.querySelector('i').className = 'fas fa-check-circle';
         btn.querySelector('i').style.opacity = '1';
         score++;
-    } else {
+        const bonus = Math.round(MAX_BONUS * (Math.max(timeLeft, 0) / TIME_PER_QUESTION));
+        totalPoints += BASE_POINTS + bonus;
+        pointsLive.textContent = totalPoints;
+    } else if (btn) {
         btn.classList.add('wrong');
         btn.querySelector('i').className = 'fas fa-times-circle';
         btn.querySelector('i').style.opacity = '1';
+    }
+
+    if (!isCorrect) {
         allBtns.forEach(b => {
             if (b.textContent.trim().startsWith(correctName)) {
                 b.classList.add('correct');
@@ -136,6 +177,7 @@ function showResults() {
 
     scoreDisplay.textContent = `${percentage}%`;
     scoreDetails.textContent = `${score} bonnes réponses sur ${total}`;
+    pointsDetails.innerHTML = `<i class="fas fa-bolt"></i> ${totalPoints} points de rapidité`;
 
     const greeting = playerName ? `Bravo ${playerName} !` : 'Bravo !';
     resultTitle.textContent = greeting;

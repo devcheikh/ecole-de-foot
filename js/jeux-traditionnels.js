@@ -1,6 +1,7 @@
 /*
     Avenir de Thiawlene - Jeux Traditionnels
-    Quiz culturel sur les jeux wolof et sénégalais.
+    Quiz culturel sur les jeux wolof et sénégalais, chronométré pour
+    récompenser la rapidité.
     Contenu tiré du mémoire de DEA d'Iba Fall, "La dimension éducative à
     travers les mythes, superstitions et jeux dans la société traditionnelle
     africaine : le cas du Sénégal", UCAD, 2009-2010.
@@ -36,10 +37,17 @@ const TRADITIONAL_GAMES = [
 
 const DISTRACTOR_NAMES = ['Le Zigala', 'Le Langa Buri', 'Le Yooté', "L'Awélé"];
 
+const TIME_PER_QUESTION = 12;
+const BASE_POINTS = 50;
+const MAX_BONUS = 50;
+
 let roundQuestions = [];
 let currentIndex = 0;
 let score = 0;
+let totalPoints = 0;
 let playerName = '';
+let timeLeft = TIME_PER_QUESTION;
+let timerInterval = null;
 
 const selectionScreen = document.getElementById('selection-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -52,8 +60,11 @@ const funFactBox = document.getElementById('fun-fact-box');
 const funFactText = document.getElementById('fun-fact-text');
 const scoreDisplay = document.getElementById('score-display');
 const scoreDetails = document.getElementById('score-details');
+const pointsDetails = document.getElementById('points-details');
+const pointsLive = document.getElementById('points-live');
 const resultTitle = document.getElementById('result-title');
 const resultMsg = document.getElementById('result-message');
+const timerEl = document.getElementById('timer');
 
 document.addEventListener('DOMContentLoaded', () => {
     startBtn.onclick = () => {
@@ -63,6 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gameScreen.style.display = 'block';
         currentIndex = 0;
         score = 0;
+        totalPoints = 0;
+        pointsLive.textContent = '0';
         showQuestion();
     };
 });
@@ -89,28 +102,57 @@ function showQuestion() {
     const distractorPool = shuffle([...otherNames, ...DISTRACTOR_NAMES]);
     const options = shuffle([question.name, ...distractorPool.slice(0, 3)]);
 
-    options.forEach(name => {
+    options.forEach((name, i) => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
+        btn.dataset.index = i + 1;
         btn.innerHTML = `<span>${name}</span><i class="fas fa-chevron-right" style="opacity: 0.3;"></i>`;
         btn.onclick = () => handleAnswer(name, question, btn);
         optionsList.appendChild(btn);
     });
+
+    startTimer(question);
+}
+
+function startTimer(question) {
+    clearInterval(timerInterval);
+    timeLeft = TIME_PER_QUESTION;
+    timerEl.textContent = timeLeft;
+    timerEl.classList.remove('warning');
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 3) timerEl.classList.add('warning');
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            handleAnswer(null, question, null);
+        }
+    }, 1000);
 }
 
 function handleAnswer(selected, question, btn) {
+    clearInterval(timerInterval);
     const allBtns = optionsList.querySelectorAll('.answer-btn');
     allBtns.forEach(b => b.inert = true);
 
-    if (selected === question.name) {
+    const isCorrect = selected === question.name;
+
+    if (isCorrect) {
         btn.classList.add('correct');
         btn.querySelector('i').className = 'fas fa-check-circle';
         btn.querySelector('i').style.opacity = '1';
         score++;
-    } else {
+        const bonus = Math.round(MAX_BONUS * (Math.max(timeLeft, 0) / TIME_PER_QUESTION));
+        totalPoints += BASE_POINTS + bonus;
+        pointsLive.textContent = totalPoints;
+    } else if (btn) {
         btn.classList.add('wrong');
         btn.querySelector('i').className = 'fas fa-times-circle';
         btn.querySelector('i').style.opacity = '1';
+    }
+
+    if (!isCorrect) {
         allBtns.forEach(b => {
             if (b.textContent.trim().startsWith(question.name)) {
                 b.classList.add('correct');
@@ -130,7 +172,7 @@ function handleAnswer(selected, question, btn) {
         } else {
             showResults();
         }
-    }, 3200);
+    }, 2600);
 }
 
 function showResults() {
@@ -143,6 +185,7 @@ function showResults() {
 
     scoreDisplay.textContent = `${percentage}%`;
     scoreDetails.textContent = `${score} bonnes réponses sur ${total}`;
+    pointsDetails.innerHTML = `<i class="fas fa-bolt"></i> ${totalPoints} points de rapidité`;
 
     const greeting = playerName ? `Bravo ${playerName} !` : 'Bravo !';
     resultTitle.textContent = greeting;

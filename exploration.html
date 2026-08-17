@@ -68,7 +68,9 @@
         </div>
 
         <!-- Game Screen -->
-        <div id="game-screen" class="quiz-card" style="display: none;">
+        <div id="game-screen" class="quiz-card explo-game-card" style="display: none;">
+            <div id="timer" class="explo-timer">8</div>
+            <div class="explo-points-pill"><i class="fas fa-bolt"></i> <span id="points-live">0</span> pts</div>
             <div class="progress-container">
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
@@ -85,7 +87,8 @@
             <h2 id="result-title">Félicitations !</h2>
             <p id="result-message">Tu connais bien ton quartier.</p>
             <div id="score-display" class="result-score">0%</div>
-            <p id="score-details" style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
+            <p id="score-details" style="margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500;">0 bonnes réponses sur 0</p>
+            <p id="points-details" class="explo-points-final"><i class="fas fa-bolt"></i> 0 points de rapidité</p>
             <button onclick="location.reload()" class="btn btn-primary" style="padding: 1rem 2.5rem;">Rejouer</button>
         </div>
     </main>
