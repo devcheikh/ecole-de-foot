@@ -487,6 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => fetchMatches())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'joueurs' }, () => fetchPlayers())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery' }, () => fetchGallery())
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'site_tracking' }, () => fetchAudienceData())
         .subscribe();
 
     // FALLBACK: Auto-refresh stats every 15s in case realtime replication is not enabled
