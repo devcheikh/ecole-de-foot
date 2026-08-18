@@ -110,6 +110,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // "Jeux" Nav Dropdown (groups Quiz, Exploration, Jeux Traditionnels)
+    document.querySelectorAll('.nav-dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdown = toggle.closest('.nav-dropdown');
+            dropdown.classList.toggle('open');
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown.open').forEach(d => d.classList.remove('open'));
+    });
+
     // Navbar Scroll Effect
     window.addEventListener("scroll", () => {
         const nav = document.querySelector('nav');
