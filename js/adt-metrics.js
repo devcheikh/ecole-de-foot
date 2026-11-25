@@ -31,13 +31,13 @@
         // --- Session Management ---
         let sessionId = sessionStorage.getItem('adt_session_id');
         if (!sessionId) {
-            sessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            sessionId = 'sess_' + crypto.randomUUID();
             sessionStorage.setItem('adt_session_id', sessionId);
         }
 
         // --- Tracking Data ---
         const trackingData = {
-            page_path: window.location.pathname.split('/').pop() || 'index.html',
+            page_path: (window.location.pathname.split('/').pop() || 'index.html').slice(0, 100),
             referrer: document.referrer ? new URL(document.referrer).hostname : 'Direct',
             device_type: getDeviceType(),
             browser: getBrowser(),

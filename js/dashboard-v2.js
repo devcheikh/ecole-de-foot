@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Global storage for details view and editing
     let playersCache = [];
     let matchesCache = [];
+    let themesCache = [];
 
     // Auth Session Check
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -123,13 +124,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Image Upload helper
     async function uploadFile(file, folder) {
         if (!file) return null;
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
+        // Sécurité : uniquement des images, extension en liste blanche, nom aléatoire non devinable
+        const allowed = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+        const fileExt = allowed[file.type];
+        if (!fileExt) throw new Error('Format non autorisé (JPG, PNG, WEBP ou GIF uniquement).');
+        if (file.size > 5 * 1024 * 1024) throw new Error('Image trop lourde (5 Mo maximum).');
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const filePath = `${folder}/${fileName}`;
 
         const { error: uploadError } = await supabaseClient.storage
             .from('football')
-            .upload(filePath, file);
+            .upload(filePath, file, { contentType: file.type, upsert: false });
 
         if (uploadError) {
             throw uploadError;
@@ -159,24 +164,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (catPlayers.length > 0) {
                     html += `
                         <tr class="category-divider">
-                            <td colspan="4" style="background: #f1f5f9; font-weight: 800; font-size: 0.75rem; color: #64748b; text-transform: uppercase; padding: 0.75rem 1.5rem;">${cat}</td>
+                            <td colspan="4" style="background: #f1f5f9; font-weight: 800; font-size: 0.75rem; color: #64748b; text-transform: uppercase; padding: 0.75rem 1.5rem;">${escapeHTML(cat)}</td>
                         </tr>
                     `;
                     catPlayers.forEach(p => {
                         html += `
-                            <tr class="player-row" style="cursor: pointer;" onclick="showPlayerDetails('${p.id}')">
+                            <tr class="player-row" style="cursor: pointer;" onclick="showPlayerDetails('${escapeHTML(p.id)}')">
                                 <td style="display: flex; align-items: center; gap: 1rem;">
-                                    <img src="${p.photo_url || 'assets/images/logo.jpg'}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; background: #e2e8f0; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" alt="">
-                                    <span style="font-weight: 600;">${p.prenom} ${p.nom}</span>
+                                    <img src="${safeUrl(p.photo_url, 'assets/images/logo.jpg')}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; background: #e2e8f0; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" alt="">
+                                    <span style="font-weight: 600;">${escapeHTML(p.prenom)} ${escapeHTML(p.nom)}</span>
                                 </td>
-                                <td><span class="badge badge-info">${p.position || 'N/A'}</span></td>
-                                <td><span class="badge ${p.statut_dossier === 'Complet' ? 'badge-success' : 'badge-warning'}">${p.statut_dossier}</span></td>
+                                <td><span class="badge badge-info">${escapeHTML(p.position || 'N/A')}</span></td>
+                                <td><span class="badge ${p.statut_dossier === 'Complet' ? 'badge-success' : 'badge-warning'}">${escapeHTML(p.statut_dossier)}</span></td>
                                 <td onclick="event.stopPropagation()">
                                     <div style="display: flex; gap: 0.5rem;">
-                                        <button class="btn-action" style="color: var(--primary); background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="editPlayer('${p.id}')">
+                                        <button class="btn-action" style="color: var(--primary); background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="editPlayer('${escapeHTML(p.id)}')">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="deleteItem('joueurs', '${p.id}')">
+                                        <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="deleteItem('joueurs', '${escapeHTML(p.id)}')">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
@@ -192,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     window.showPlayerDetails = function(playerId) {
-        const player = playersCache.find(p => p.id === playerId);
+        const player = playersCache.find(p => String(p.id) === String(playerId));
         if (!player) return;
 
         const content = document.getElementById('player-details-content');
@@ -200,12 +205,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             content.innerHTML = `
                 <div style="display: flex; flex-direction: column; gap: 2rem;">
                     <div style="display: flex; align-items: center; gap: 2rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1.5rem;">
-                        <img src="${player.photo_url || 'assets/images/logo.jpg'}" style="width: 120px; height: 120px; border-radius: 20px; object-fit: cover; border: 4px solid white; box-shadow: var(--shadow-md);">
+                        <img src="${safeUrl(player.photo_url, 'assets/images/logo.jpg')}" alt="" style="width: 120px; height: 120px; border-radius: 20px; object-fit: cover; border: 4px solid white; box-shadow: var(--shadow-md);">
                         <div>
-                            <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">${player.prenom} ${player.nom}</h2>
-                            <span class="badge badge-info" style="font-size: 0.9rem;">${player.categorie} - ${player.position || 'Sans position'}</span>
+                            <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">${escapeHTML(player.prenom)} ${escapeHTML(player.nom)}</h2>
+                            <span class="badge badge-info" style="font-size: 0.9rem;">${escapeHTML(player.categorie)} - ${escapeHTML(player.position || 'Sans position')}</span>
                             <div style="margin-top: 1rem;">
-                                <button class="btn btn-outline btn-sm" onclick="closeModal('playerDetailsModal'); editPlayer('${player.id}')">
+                                <button class="btn btn-outline btn-sm" onclick="closeModal('playerDetailsModal'); editPlayer('${escapeHTML(player.id)}')">
                                     <i class="fas fa-edit"></i> Modifier le profil
                                 </button>
                             </div>
@@ -215,19 +220,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div class="info-block">
                             <label style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Filiation (Père)</label>
-                            <p style="font-weight: 600; font-size: 1.1rem;">${player.nom_pere || '<span style="color: #ef4444; font-size: 0.8rem;">Non renseigné</span>'}</p>
+                            <p style="font-weight: 600; font-size: 1.1rem;">${player.nom_pere ? escapeHTML(player.nom_pere) : '<span style="color: #ef4444; font-size: 0.8rem;">Non renseigné</span>'}</p>
                         </div>
                         <div class="info-block">
                             <label style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Filiation (Mère)</label>
-                            <p style="font-weight: 600; font-size: 1.1rem;">${player.nom_mere || '<span style="color: #ef4444; font-size: 0.8rem;">Non renseigné</span>'}</p>
+                            <p style="font-weight: 600; font-size: 1.1rem;">${player.nom_mere ? escapeHTML(player.nom_mere) : '<span style="color: #ef4444; font-size: 0.8rem;">Non renseigné</span>'}</p>
                         </div>
                         <div class="info-block">
                             <label style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Contact Parent</label>
-                            <p style="font-weight: 600; font-size: 1.1rem; color: var(--primary);"><i class="fas fa-phone-alt" style="font-size: 0.8rem; margin-right: 0.5rem;"></i>${player.parent_contact || 'N/A'}</p>
+                            <p style="font-weight: 600; font-size: 1.1rem; color: var(--primary);"><i class="fas fa-phone-alt" style="font-size: 0.8rem; margin-right: 0.5rem;"></i>${escapeHTML(player.parent_contact || 'N/A')}</p>
                         </div>
                         <div class="info-block">
                             <label style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Statut Dossier</label>
-                            <span class="badge ${player.statut_dossier === 'Complet' ? 'badge-success' : 'badge-warning'}">${player.statut_dossier}</span>
+                            <span class="badge ${player.statut_dossier === 'Complet' ? 'badge-success' : 'badge-warning'}">${escapeHTML(player.statut_dossier)}</span>
                         </div>
                     </div>
                 </div>
@@ -237,7 +242,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     window.editPlayer = function(id) {
-        const p = playersCache.find(x => x.id === id);
+        const p = playersCache.find(x => String(x.id) === String(id));
         if (!p) return;
 
         document.getElementById('p_id').value = p.id;
@@ -267,16 +272,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             tbody.innerHTML = matchesCache.map(match => `
                 <tr>
                     <td><span style="font-weight: 600;">${new Date(match.date).toLocaleDateString()}</span></td>
-                    <td>${match.adversaire}</td>
-                    <td><span class="badge badge-info">${match.type || 'N/A'}</span></td>
-                    <td><span style="font-size: 0.85rem; opacity: 0.8;">${match.match_type || '-'}</span></td>
-                    <td style="font-weight: 800; color: var(--primary);">${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</td>
+                    <td>${escapeHTML(match.adversaire)}</td>
+                    <td><span class="badge badge-info">${escapeHTML(match.type || 'N/A')}</span></td>
+                    <td><span style="font-size: 0.85rem; opacity: 0.8;">${escapeHTML(match.match_type || '-')}</span></td>
+                    <td style="font-weight: 800; color: var(--primary);">${escapeHTML(match.score_equipe ?? '-')} : ${escapeHTML(match.score_adv ?? '-')}</td>
                     <td>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn-action" style="color: var(--primary); background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="editMatch('${match.id}')">
+                            <button class="btn-action" style="color: var(--primary); background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="editMatch('${escapeHTML(match.id)}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="deleteItem('matches', '${match.id}')">
+                            <button class="btn-action" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem;" onclick="deleteItem('matches', '${escapeHTML(match.id)}')">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
@@ -291,7 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     window.editMatch = function(id) {
-        const m = matchesCache.find(x => x.id === id);
+        const m = matchesCache.find(x => String(x.id) === String(id));
         if (!m) return;
 
         document.getElementById('m_id').value = m.id;
@@ -319,12 +324,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (grid) {
             grid.innerHTML = imgList.map(img => `
                 <div class="gallery-item" style="position: relative; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow-sm); aspect-ratio: 1; group">
-                    <img src="${img.image_url}" alt="${img.titre}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <button onclick="deleteItem('gallery', '${img.id}')" style="position: absolute; top: 12px; right: 12px; width: 35px; height: 35px; border-radius: 50%; border: none; background: rgba(239, 68, 68, 0.9); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; opacity: 0;" class="delete-btn-gallery">
+                    <img src="${safeUrl(img.image_url)}" alt="${escapeHTML(img.titre)}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <button onclick="deleteItem('gallery', '${escapeHTML(img.id)}')" style="position: absolute; top: 12px; right: 12px; width: 35px; height: 35px; border-radius: 50%; border: none; background: rgba(239, 68, 68, 0.9); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; opacity: 0;" class="delete-btn-gallery">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                     <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 20px 15px 15px; font-size: 0.9rem; font-weight: 600;">
-                        ${img.titre}
+                        ${escapeHTML(img.titre)}
                     </div>
                 </div>
             `).join('');
@@ -334,6 +339,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     window.deleteItem = async function(table, id) {
+        if (!['joueurs', 'matches', 'gallery'].includes(table)) return;
         if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
         const { error } = await supabaseClient.from(table).delete().eq('id', id);
         if (error) alert('Erreur : ' + error.message);
@@ -515,6 +521,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (error) { console.error(error); return; }
         
         const themes = data || [];
+        themesCache = themes;
         const tbody = document.getElementById('themes-list');
         const themeFilter = document.getElementById('theme-filter');
         const qThemeId = document.getElementById('q_theme_id');
@@ -527,18 +534,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Table Row
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><i class="${theme.icon}"></i></td>
-                <td><span class="theme-name-link" onclick="selectTheme('${theme.id}', '${theme.name}')" style="cursor:pointer; color:var(--primary); font-weight:600;">${theme.name}</span></td>
+                <td><i class="${safeIconClass(theme.icon)}"></i></td>
+                <td><span class="theme-name-link" onclick="selectTheme('${escapeHTML(theme.id)}')" style="cursor:pointer; color:var(--primary); font-weight:600;">${escapeHTML(theme.name)}</span></td>
                 <td>
-                    <button class="btn-icon" onclick="editTheme('${theme.id}', '${theme.name}', '${theme.icon}')" title="Modifier"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon delete" onclick="deleteTheme('${theme.id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                    <button class="btn-icon" onclick="editTheme('${escapeHTML(theme.id)}')" title="Modifier"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon delete" onclick="deleteTheme('${escapeHTML(theme.id)}')" title="Supprimer"><i class="fas fa-trash"></i></button>
                 </td>
             `;
             if (tbody) tbody.appendChild(tr);
 
             // Filters & Selects
-            if (themeFilter) themeFilter.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
-            if (qThemeId) qThemeId.innerHTML += `<option value="${theme.id}">${theme.name}</option>`;
+            if (themeFilter) themeFilter.add(new Option(theme.name, theme.id));
+            if (qThemeId) qThemeId.add(new Option(theme.name, theme.id));
         });
 
         // Auto-select first theme if nothing selected and we have data
@@ -548,6 +555,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     window.selectTheme = function(id, name) {
+        if (name === undefined) {
+            const t = themesCache.find(x => String(x.id) === String(id));
+            name = t ? t.name : '';
+        }
         window.currentSelectedThemeId = id;
         const nameEl = document.getElementById('selected-theme-name');
         if (nameEl) nameEl.textContent = name;
@@ -587,11 +598,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         questions.forEach(q => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="max-width: 300px; white-space: normal;">${q.question}</td>
-                <td>${q.options[q.correct_index]}</td>
+                <td style="max-width: 300px; white-space: normal;">${escapeHTML(q.question)}</td>
+                <td>${escapeHTML(Array.isArray(q.options) ? q.options[q.correct_index] : '')}</td>
                 <td>
-                    <button class="btn-icon" onclick="editQuestion('${q.id}')" title="Modifier"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon delete" onclick="deleteQuestion('${q.id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                    <button class="btn-icon" onclick="editQuestion('${escapeHTML(q.id)}')" title="Modifier"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon delete" onclick="deleteQuestion('${escapeHTML(q.id)}')" title="Supprimer"><i class="fas fa-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -612,7 +623,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (error) { 
             console.error("Erreur résultats:", error.message);
-            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Erreur : ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Erreur : ${escapeHTML(error.message)}</td></tr>`;
             return; 
         }
 
@@ -646,16 +657,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const tr = document.createElement('tr');
                 tr.className = isWinner ? 'winner-row' : '';
                 tr.innerHTML = `
-                    <td><div style="font-weight:700;">${res.user_name}</div></td>
+                    <td><div style="font-weight:700;">${escapeHTML(res.user_name)}</div></td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span>${res.user_phone}</span>
-                            ${whatsappUrl ? `<a href="${whatsappUrl}" target="_blank" style="color: #25D366; font-size: 1.15rem; transition: transform 0.2s; display: inline-flex;" title="Contacter sur WhatsApp" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-whatsapp"></i></a>` : ''}
+                            <span>${escapeHTML(res.user_phone)}</span>
+                            ${whatsappUrl ? `<a href="${escapeHTML(whatsappUrl)}" target="_blank" rel="noopener noreferrer" style="color: #25D366; font-size: 1.15rem; transition: transform 0.2s; display: inline-flex;" title="Contacter sur WhatsApp" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-whatsapp"></i></a>` : ''}
                         </div>
                     </td>
-                    <td><span style="font-size:0.8rem; opacity:0.7;">${res.theme_name} / ${res.difficulty}</span></td>
-                    <td><span class="badge" style="background:${isWinner ? 'var(--primary)' : '#e2e8f0'}; color:${isWinner ? 'white' : 'inherit'};">${res.score}/${res.total_questions}</span></td>
-                    <td><button class="btn-icon delete" onclick="deleteResult('${res.id}')"><i class="fas fa-trash"></i></button></td>
+                    <td><span style="font-size:0.8rem; opacity:0.7;">${escapeHTML(res.theme_name)} / ${escapeHTML(res.difficulty)}</span></td>
+                    <td><span class="badge" style="background:${isWinner ? 'var(--primary)' : '#e2e8f0'}; color:${isWinner ? 'white' : 'inherit'};">${escapeHTML(res.score)}/${escapeHTML(res.total_questions)}</span></td>
+                    <td><button class="btn-icon delete" onclick="deleteResult('${escapeHTML(res.id)}')"><i class="fas fa-trash"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -673,10 +684,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Modal Handlers
-    window.editTheme = function(id, name, icon) {
-        document.getElementById('theme_id').value = id;
-        document.getElementById('theme_name').value = name;
-        document.getElementById('theme_icon').value = icon;
+    window.editTheme = function(id) {
+        const t = themesCache.find(x => String(x.id) === String(id));
+        if (!t) return;
+        document.getElementById('theme_id').value = t.id;
+        document.getElementById('theme_name').value = t.name || '';
+        document.getElementById('theme_icon').value = t.icon || '';
         openModal('themeModal');
     };
 
@@ -770,7 +783,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // --- Audience & Tracking Functions ---
-    window.fetchAudienceData = async function() {
+    // Déclaration hoistée : la fonction est appelée plus haut, au chargement
+    async function fetchAudienceData() {
         try {
             const { data, error } = await supabaseClient
                 .from('site_tracking')
@@ -780,7 +794,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (error) {
                 console.error("Audience fetch error:", error);
                 const el = document.getElementById('audience-breakdown');
-                if (el) el.innerHTML = `<div style="color:red; padding: 1rem;">Erreur Supabase: ${error.message || JSON.stringify(error)}</div>`;
+                if (el) el.innerHTML = `<div style="color:red; padding: 1rem;">Erreur Supabase: ${escapeHTML(error.message || JSON.stringify(error))}</div>`;
                 return;
             }
 
@@ -825,8 +839,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else {
                     topPagesEl.innerHTML = sortedPages.map(page => `
                         <tr>
-                            <td style="font-weight: 600;">${page[0]}</td>
-                            <td><span class="badge badge-info">${page[1]} vues</span></td>
+                            <td style="font-weight: 600;">${escapeHTML(page[0])}</td>
+                            <td><span class="badge badge-info">${escapeHTML(page[1])} vues</span></td>
                         </tr>
                     `).join('');
                 }
@@ -844,7 +858,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         proportionHTML += `
                             <div style="margin-bottom: 1rem;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
-                                    <span style="font-weight: 600;"><i class="fas fa-${device === 'Mobile' ? 'mobile-alt' : (device === 'Desktop' ? 'laptop' : 'tablet-alt')}"></i> ${device}</span>
+                                    <span style="font-weight: 600;"><i class="fas fa-${device === 'Mobile' ? 'mobile-alt' : (device === 'Desktop' ? 'laptop' : 'tablet-alt')}"></i> ${escapeHTML(device)}</span>
                                     <span>${perc}% (${count})</span>
                                 </div>
                                 <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
@@ -866,11 +880,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const recentLogs = trackingData.slice(0, 50); // Show last 50
                     logsEl.innerHTML = recentLogs.map(log => `
                         <tr style="font-size: 0.85rem;">
-                            <td><span style="opacity: 0.7;">${new Date(log.created_at).toLocaleString()}</span></td>
-                            <td style="font-weight: 600;">${log.page_path}</td>
-                            <td>${log.device_type}</td>
-                            <td>${log.browser}</td>
-                            <td>${log.referrer || 'Direct'}</td>
+                            <td><span style="opacity: 0.7;">${escapeHTML(new Date(log.created_at).toLocaleString())}</span></td>
+                            <td style="font-weight: 600;">${escapeHTML(log.page_path)}</td>
+                            <td>${escapeHTML(log.device_type)}</td>
+                            <td>${escapeHTML(log.browser)}</td>
+                            <td>${escapeHTML(log.referrer || 'Direct')}</td>
                         </tr>
                     `).join('');
                 }
@@ -879,5 +893,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) {
             console.error(e);
         }
-    };
+    }
+    window.fetchAudienceData = fetchAudienceData;
 });

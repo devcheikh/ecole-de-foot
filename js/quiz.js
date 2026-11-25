@@ -58,8 +58,8 @@ async function fetchThemes() {
         card.dataset.id = theme.id;
         card.dataset.name = theme.name;
         card.innerHTML = `
-            <i class="${theme.icon || 'fas fa-question-circle'}" style="color: var(--primary);"></i>
-            <span>${theme.name}</span>
+            <i class="${safeIconClass(theme.icon)}" style="color: var(--primary);"></i>
+            <span>${escapeHTML(theme.name)}</span>
         `;
         card.onclick = () => selectTheme(card);
         themeGrid.appendChild(card);
@@ -129,7 +129,7 @@ startBtn.onclick = async () => {
     // Add welcome toast/overlay temporarily
     const welcome = document.createElement('div');
     welcome.style = "position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:var(--primary); color:white; padding:2rem; border-radius:20px; z-index:1000; font-size:1.5rem; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.3); text-align:center; animation: fadeInOut 2s forwards;";
-    welcome.innerHTML = `<i class="fas fa-bolt" style="display:block; font-size:3rem; margin-bottom:1rem;"></i>Prêt, ${playerName} ?<br>C'est parti !`;
+    welcome.innerHTML = `<i class="fas fa-bolt" style="display:block; font-size:3rem; margin-bottom:1rem;"></i>Prêt, ${escapeHTML(playerName)} ?<br>C'est parti !`;
     document.body.appendChild(welcome);
     setTimeout(() => welcome.remove(), 2000);
 
@@ -147,7 +147,7 @@ function showQuestion() {
     question.options.forEach((option, index) => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
-        btn.innerHTML = `<span>${option}</span><i class="fas fa-chevron-right" style="opacity: 0.3;"></i>`;
+        btn.innerHTML = `<span>${escapeHTML(option)}</span><i class="fas fa-chevron-right" style="opacity: 0.3;"></i>`;
         btn.onclick = () => handleAnswer(index, btn);
         optionsList.appendChild(btn);
     });

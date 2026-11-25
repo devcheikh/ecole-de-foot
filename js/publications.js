@@ -33,17 +33,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ${isUpcoming ? 'À venir' : 'Résultat'}
                     </span>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <div class="category-tag" style="background: rgba(34, 197, 94, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(34, 197, 94, 0.2);">${match.type}</div>
-                        <div class="match-type-tag" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${match.match_type || ''}</div>
+                        <div class="category-tag" style="background: rgba(34, 197, 94, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(34, 197, 94, 0.2);">${escapeHTML(match.type)}</div>
+                        <div class="match-type-tag" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${escapeHTML(match.match_type || '')}</div>
                     </div>
                     <div class="match-teams">
                         <div class="team">AVENIR</div>
-                        <div class="score">${match.score_equipe ?? '-'} : ${match.score_adv ?? '-'}</div>
-                        <div class="team">${match.adversaire}</div>
+                        <div class="score">${escapeHTML(match.score_equipe ?? '-')} : ${escapeHTML(match.score_adv ?? '-')}</div>
+                        <div class="team">${escapeHTML(match.adversaire)}</div>
                     </div>
                     <div class="match-info">
                         <span><i class="far fa-calendar-alt"></i> ${matchDate.toLocaleDateString('fr-FR')}</span>
-                        <span><i class="fas fa-location-dot"></i> ${match.lieu}</span>
+                        <span><i class="fas fa-location-dot"></i> ${escapeHTML(match.lieu)}</span>
                     </div>
                 `;
                 matchesContainer.appendChild(card);
@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item reveal';
                 item.innerHTML = `
-                    <img src="${img.image_url}" alt="${img.titre}">
+                    <img src="${safeUrl(img.image_url)}" alt="${escapeHTML(img.titre)}" loading="lazy">
                     <div class="gallery-overlay">
-                        <span>${img.titre}</span>
+                        <span>${escapeHTML(img.titre)}</span>
                     </div>
                 `;
                 galleryGrid.appendChild(item);
