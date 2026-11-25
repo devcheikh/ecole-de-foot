@@ -91,11 +91,11 @@
                 <div style="max-width: 400px; margin: 0 auto; text-align: left;">
                     <div class="form-group">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Prénom & Nom</label>
-                        <input type="text" id="player-name" class="form-input" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ex: Moussa Diop">
+                        <input type="text" id="player-name" maxlength="60" autocomplete="name" class="form-input" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ex: Moussa Diop">
                     </div>
                     <div class="form-group" style="margin-top: 1.5rem;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Numéro WhatsApp</label>
-                        <input type="text" id="player-phone" class="form-input" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ex: 77 123 45 67">
+                        <input type="tel" id="player-phone" maxlength="20" autocomplete="tel" class="form-input" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ex: 77 123 45 67">
                     </div>
                 </div>
             </div>
@@ -173,7 +173,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/adt-metrics.js"></script>
     <script src="js/quiz.js"></script>
